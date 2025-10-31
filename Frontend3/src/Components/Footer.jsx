@@ -1,83 +1,59 @@
 import React from 'react'
-import logo from "/vcart logo.png"
+import { Link } from 'react-router-dom'
 
 function Footer() {
   return (
-    <div className='w-[100%] md:h-[41vh] h-[21vh] mb-[77px] md:mb-[0px] '>
-        
-        <div className='w-[100%] md:h-[36vh] h-[15vh] md:mb-[0px] bg-[#dbfcfcec] flex items-center justify-center md:px-[50px] px-[5px] gap-[50px] pb-[27px]'>
-
-
-
-        <div className='md:w-[30%] w-[35%] h-[100%] flex  justify-center flex-col gap-[5px]'>
-
-            <div className='flex items-start justify-start gap-[5px] mt-[10px] md:mt-[40px]'>
-
-                <img src={logo} className='md:w-[40px] md:h-[40px] w-[30px] h-[30px] ' />
-
-                <p className='text-[19px] md:text-[20px] text-[black] '>OneCart</p>
-
-            </div>
-
-    <p className='text-[15px] text-[#1e2223]  hidden md:block'>OneCart is your all-in-one online shopping destination, offering top-quality products , unbeatable deals, and fast delivery-all backed by trusted service designed to make your life easier everyday. </p>
-
-         <p className='text-[15px] text-[#1e2223] flex md:hidden'>
-                    Fast. Easy. Reliable. OneCart Shopping
-                </p>        
-
-
-
-        </div>
-
-            <div className='md:w-[25%] w-[30%] h-[100%] flex items-center justify-center flex-col text-center'>
-              <div className='flex items-center justify-center mt-[10px] md:mt-[40px] '>
-
-             <p className='text-[19px] md:text-[20px] text-[#1e2223] font-sans'>COMPANY</p>
-
-                </div>
-
-            <ul>
-                <li className='text-[15px] text-[#1e2223] hidden md:block cursor-pointer'>Home</li>
-
-                <li className='text-[15px] text-[#1e2223]  cursor-pointer'>About Us</li>
-                <li className='text-[15px] text-[#1e2223] hidden md:block cursor-pointer'>Delivery</li>
-                <li className='text-[15px] text-[#1e2223]  cursor-pointer'>Privacy Policy</li>
+    <footer className="py-12 bg-gray-900 text-white">
+      <div className="container mx-auto px-6">
+        <div className="grid md:grid-cols-4 gap-8 mb-8">
+          <div>
+            <h3 className="text-xl font-bold mb-4 gradient-primary bg-clip-text text-transparent">
+              IMK Autos (UK) Ltd
+            </h3>
+            <p className="text-gray-400">
+              Your trusted source for premium Japanese imports and UK vehicles.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-4">Quick Links</h4>
+            <ul className="space-y-2 text-gray-400">
+              <li>
+                <Link to="/" className="hover:text-white transition-colors">Home</Link>
+              </li>
+              <li>
+                <Link to="/product" className="hover:text-white transition-colors">Inventory</Link>
+              </li>
+              <li>
+                <Link to="/about" className="hover:text-white transition-colors">About Us</Link>
+              </li>
+              <li>
+                <Link to="/contact" className="hover:text-white transition-colors">Contact</Link>
+              </li>
             </ul>
-
-            </div>
-
-     <div className='md:w-[25%] w-[40%] h-[100%] flex items-center justify-center flex-col text-center '>
-
-        <div className='flex items-center justify-center mt-[10px] md:mt-[40px] '>
-
-             <p className='text-[19px] md:text-[20px] text-[#1e2223] font-sans'>Get In Touch</p>
-
-                </div>
-
-      <ul>
-
-            <li className='text-[15px] text-[#1e2223] hidden md:block cursor-pointer'>+92-ABCDEFGHI</li>
-
-
-            <li className='text-[15px] text-[#1e2223]  cursor-pointer'>contact@onecart.com</li>
-
-            <li className='text-[15px] text-[#1e2223] hidden md:block cursor-pointer'>Delivery</li>
-
-            <li className='text-[15px] text-[#1e2223]  cursor-pointer'>admin@onecart.com</li>
-            </ul>                    
-
-                </div>        
-
+          </div>
+          <div>
+            <h4 className="font-semibold mb-4">Categories</h4>
+            <ul className="space-y-2 text-gray-400">
+              <li>Japanese Imports</li>
+              <li>UK Vehicles</li>
+              <li>Sports Cars</li>
+              <li>Luxury SUVs</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-4">Contact</h4>
+            <ul className="space-y-2 text-gray-400">
+              <li>Email: info@imkautos.co.uk</li>
+              <li>Phone: 07851 386 785</li>
+              <li>Location: London, UK</li>
+            </ul>
+          </div>
         </div>
-
-        {/* line div*/}
-        <div className='w-[100%] h-[1px] bg-sky-400'></div>
-
-        <div className='w-[100%] h-[5vh] bg-[#dbfcfcec] flex items-center justify-center py-[1px]'>
-            Copyright 2025@onecart.com -All Rights Reserved.
+        <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
+          <p>&copy; 2025 IMK Autos (UK) Ltd. All rights reserved.</p>
         </div>
-
-        </div>
+      </div>
+    </footer>
   )
 }
 

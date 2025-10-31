@@ -1,139 +1,258 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Title from '../Components/Title'
 import { shopDataContext } from '../Context/ShopContext'
 import { authDataContext } from '../Context/AuthContext'
 import axios from 'axios'
+import { FiPackage, FiClock, FiTruck, FiCheckCircle } from 'react-icons/fi'
 
 function Order() {
+  const [orderData, setOrderData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const { currency } = useContext(shopDataContext)
+  const { serverUrl } = useContext(authDataContext)
 
-    let [orderData,setOrderData]=useState([])
+  const loadOrderData = async () => {
+    try {
+      setLoading(true)
+      const result = await axios.post(serverUrl + "/api/order/userorder", {}, { withCredentials: true })
+      console.log(result.data)
 
-    let {currency}=useContext(shopDataContext)
+      if (result.data) {
+        let allOrderItem = []
 
-    let {serverUrl}=useContext(authDataContext)
-
-    let loadOrderData=async()=>{
-        try{
-
-         const result=await axios.post(serverUrl+"/api/order/userorder",{},{withCredentials:true})
-
-         console.log(result.data)
-         
-         if(result.data){
-            let allOrderItem=[]
-
-          result.data.map((order)=>{
-            order.items.map((item)=>{
-
-           item['status']=order.status
-           
-           item['payment']=order.payment
-           
-           item['paymentMethod']=order.paymentMethod
-
-           item['date']=order.date              
-        
-           allOrderItem.push(item)
-           
+        result.data.map((order) => {
+          order.items.map((item) => {
+            item['status'] = order.status
+            item['payment'] = order.payment
+            item['paymentMethod'] = order.paymentMethod
+            item['date'] = order.date
+            item['orderId'] = order._id
+            allOrderItem.push(item)
+          })
         })
-          }) 
-        
-    //allOrderItem is an array and we are reversing it so that the latest added items come on the top       
-        setOrderData(allOrderItem.reverse())  
 
-
-
-         }
-
-        }catch(error){
-          console.log("Load order data error ❌", error.response?.data || error.message)
-        }
+        // Reverse so latest orders appear first
+        setOrderData(allOrderItem.reverse())
+      }
+    } catch (error) {
+      console.log("Load order data error ❌", error.response?.data || error.message)
+    } finally {
+      setLoading(false)
     }
+  }
 
-    useEffect(()=>{
-       loadOrderData()
-    },[])
+  useEffect(() => {
+    loadOrderData()
+  }, [])
+
+  const getStatusIcon = (status) => {
+    const statusLower = status?.toLowerCase() || ''
+    if (statusLower.includes('placed') || statusLower.includes('pending')) {
+      return <FiPackage className="w-5 h-5" />
+    } else if (statusLower.includes('packing')) {
+      return <FiPackage className="w-5 h-5" />
+    } else if (statusLower.includes('shipped') || statusLower.includes('delivery')) {
+      return <FiTruck className="w-5 h-5" />
+    } else if (statusLower.includes('delivered')) {
+      return <FiCheckCircle className="w-5 h-5" />
+    }
+    return <FiClock className="w-5 h-5" />
+  }
+
+  const getStatusColor = (status) => {
+    const statusLower = status?.toLowerCase() || ''
+    if (statusLower.includes('placed') || statusLower.includes('pending')) {
+      return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800'
+    } else if (statusLower.includes('packing')) {
+      return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800'
+    } else if (statusLower.includes('shipped') || statusLower.includes('delivery')) {
+      return 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800'
+    } else if (statusLower.includes('delivered')) {
+      return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800'
+    }
+    return 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700'
+  }
+
+  const formatDate = (date) => {
+    if (!date) return 'N/A'
+    const d = new Date(date)
+    return d.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  }
+
+  const formatTime = (date) => {
+    if (!date) return 'N/A'
+    const d = new Date(date)
+    return d.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
+        <div className="container mx-auto px-6 py-12">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (orderData.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
+        <div className="container mx-auto px-6 py-12">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-12">
+              <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                <FiPackage className="w-12 h-12 text-gray-400" />
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">No Orders Yet</h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-8">You haven't placed any orders yet. Start shopping to see your orders here!</p>
+              <button
+                onClick={() => window.location.href = '/product'}
+                className="gradient-primary text-white font-semibold px-8 py-3 rounded-lg hover:opacity-90 transition-opacity shadow-lg"
+              >
+                Browse Vehicles
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className='w-[99vw] min-h-[100vh] p-[20px] pb-[150px] overflow-hidden bg-gradient-to-t from-[#141414] to-[#0c2025] '>
-
-      <div className='h-[8%] w-[100%] text-center mt-[80px] '>
-        <Title text1={"MY"} text2={"ORDERS"} />
-      </div>
-
-      <div className='w-[100%] h-[92%] flex flex-wrap gap-[20px] '>
-       {
-        orderData.map((item,index)=>(
-          
-        <div key={index} className='w-[100%] h-[13%] border-t border-b '>
-        <div className='w-[100%] h-[80%] flex items-start gap-6 bg-[#51808048] py-[10px] px-[20px] rounded-2xl relative '>
-
-          <img src={item.image1} className='w-[130px] h-[130px] rounded-md'/>
-
-          <div className='flex items-start justify-center flex-col gap-[5px] '>
-
-           <p className='md:text-[25px] text-[20px] text-[#f3f9fc] '>{item.name}</p>  
-
-           <div className='flex items-center gap-[8px] md:gap-[20px] '>
-
-            <p className='md:text-[18px] text-[12px] text-[#aaf4e7] '>{currency} {item.price}</p>
-
-             <p className='md:text-[18px] text-[12px] text-[#aaf4e7] '>Quantity : {item.quantity}</p>
-
-            <p className='md:text-[18px] text-[12px] text-[#aaf4e7] '>Size: {item.size}</p>
-
-            </div>
-
-            {/*Date div */}
-
-            <div className='flex items-center'>
-              <p className='md:text-[18px] text-[12px] text-[#aaf4e7] '>
-                Date:                
-                
-{/*
-1)new Date(item.date)  :=
-
-Takes the item.date value (likely an ISO string like "2025-08-09T12:34:56Z")
-
-Converts it into a JavaScript Date object. 
-
-2).toDateString() :=
-Formats the date in a fixed, human-readable style:
-
-DayOfWeek Month Day Year
-e.g., "Sat Aug 09 2025"
-
-No time, no timezone, no seconds — just the date.*/}
-                <span className='text-[#e4fbff] pl-[10px] md:text-[16px] text-[11px] '>{new Date(item.date).toDateString()}</span> 
-                </p>  
-                </div>
-      <div className='flex items-center'>
-        <p className='md:text-[16px] text-[12px] text-[#aaf4e7] '>
-            Payment Method :{item.paymentMethod}
-            </p>
-       </div>
-
-       <div className='absolute md:left-[55%] md:top-[40%] right-[2%] top-[2%] '>
-        <div className='flex items-center gap-[5px]' >
-           <p className='min-w-2 h-2 rounded-full bg-green-500 '></p>
-           <p className='md:text-[17px] text-[10px] text-[#f3f9fc] '>{item.status}</p>
-
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
+      <div className="container mx-auto px-6 py-8">
+        <div className="mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-2">My Orders</h1>
+          <p className="text-gray-600 dark:text-gray-400">{orderData.length} {orderData.length === 1 ? 'order' : 'orders'} total</p>
         </div>
 
-     </div> 
+        <div className="space-y-6">
+          {orderData.map((item, index) => {
+            // Support both old (name/image1) and new (title/images) schema
+            const displayName = item.title || item.name || `${item.brand || ''} ${item.model || ''}`.trim() || 'Vehicle'
+            const displayImage = (item.images && item.images.length > 0) 
+              ? item.images[0] 
+              : item.image1 || 'https://via.placeholder.com/300x200?text=Vehicle'
+            const totalPrice = (item.price || 0) * (item.quantity || 1)
 
-     <div className='absolute md:right-[5%] right-[1%] md:top-[40%] top-[72%] '>
-        <button className='px-[15px]  py-[3px]  md:py-[7px] rounded-md bg-[#101919] text-[#f3f9fc] text-[12px] md:text-[16px] cursor-pointer active:bg-slate-500 ' onClick={loadOrderData} >Track Order</button>
-        </div>         
+            return (
+              <div
+                key={index}
+                className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-shadow p-6 animate-fade-in"
+              >
+                <div className="flex flex-col md:flex-row gap-6">
+                  {/* Image */}
+                  <div className="flex-shrink-0">
+                    <img
+                      src={displayImage}
+                      alt={displayName}
+                      className="w-full md:w-40 h-40 object-cover rounded-lg"
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/300x200?text=Vehicle';
+                      }}
+                    />
+                  </div>
 
-          </div>
- 
-            </div>
-          </div>
-        ))
-       }  
+                  {/* Details */}
+                  <div className="flex-grow flex flex-col md:flex-row justify-between gap-4">
+                    <div className="flex-grow">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                        {displayName}
+                      </h3>
+                      
+                      {/* Vehicle Details */}
+                      {(item.brand || item.model || item.year) && (
+                        <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
+                          {item.brand && item.model ? `${item.brand} ${item.model}` : item.brand || item.model}
+                          {item.year && ` • ${item.year}`}
+                        </p>
+                      )}
+
+                      {/* Order Info */}
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-gray-900 dark:text-gray-100">Quantity:</span>
+                          <span>{item.quantity || 1}</span>
+                        </div>
+                        {item.size && item.size !== 'default' && (
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-gray-900 dark:text-gray-100">Size:</span>
+                            <span>{item.size}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-gray-900 dark:text-gray-100">Unit Price:</span>
+                          <span>{currency}{item.price?.toLocaleString() || '0'}</span>
+                        </div>
+                      </div>
+
+                      {/* Date and Payment */}
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                          <FiClock className="w-4 h-4" />
+                          <span>{formatDate(item.date)} at {formatTime(item.date)}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                          <span className="font-semibold text-gray-900 dark:text-gray-100">Payment Method:</span>
+                          <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">
+                            {item.paymentMethod || 'COD'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Side - Status and Total */}
+                    <div className="flex flex-col items-start md:items-end gap-4">
+                      {/* Status Badge */}
+                      <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border ${getStatusColor(item.status)}`}>
+                        {getStatusIcon(item.status)}
+                        <span className="font-semibold text-sm">{item.status || 'Pending'}</span>
+                      </div>
+
+                      {/* Total Price */}
+                      <div className="text-right">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total</p>
+                        <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                          {currency}{totalPrice.toLocaleString()}
+                        </p>
+                      </div>
+
+                      {/* Payment Status */}
+                      <div className="text-right">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Payment Status</p>
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          item.payment
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                            : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+                        }`}>
+                          {item.payment ? '✅ Paid' : '⏳ Pending'}
+                        </span>
+                      </div>
+
+                      {/* Track Order Button */}
+                      <button
+                        onClick={loadOrderData}
+                        className="mt-2 px-6 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm"
+                      >
+                        Refresh Status
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
-
     </div>
   )
 }

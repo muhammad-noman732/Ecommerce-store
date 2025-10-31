@@ -24,17 +24,21 @@ function ShopContext({children}) {
 
     let delivery_fee=10;
 
-    const getProducts=async()=>{
+    const getProducts=async(page=1, limit=200)=>{
 
         try{
 
-            let result=await axios.get(serverUrl+"/api/product/list",{withCredentials:true})
+            let result=await axios.get(serverUrl+"/api/product/list",{
+                params: { page, limit },
+                withCredentials:true
+            })
 
-            setProducts(result.data)
+            // Backend returns { data, page, limit, total, totalPages }
+            // Extract the data array from the response
+            const productsData = result.data?.data || result.data || []
+            setProducts(productsData)
 
-            console.log("Get All products",result.data)
-
-
+            console.log("Get All products", productsData)
 
         }catch(error){
           console.log("Get Products  error ❌", error.response?.data || error.message)
@@ -44,10 +48,9 @@ function ShopContext({children}) {
 
 
 const addToCart = async (itemId, size) => {
-  if (!size) {
-    console.log("Select Product Size.");
-    return;
-  }
+  // For vehicles (which don't have sizes), use a default size
+  // This keeps the existing cart structure compatible
+  const cartSize = size || "default"
 
   /*cartItem is the current state of the cart from useState.
 
@@ -145,13 +148,13 @@ cartData = {
 }
       */
 
-  if (cartData[itemId][size]) {
-    cartData[itemId][size] += 1;
+  if (cartData[itemId][cartSize]) {
+    cartData[itemId][cartSize] += 1;
   }
 
 
 
-  /* This "else" condition check 	If size doesn’t exist, add it with quantity 1. 
+  /* This "else" condition check 	If size doesn't exist, add it with quantity 1. 
   For Example: if the user selects different size then  the size becomes 1. For Example:
 
   cartItem = {
@@ -160,7 +163,7 @@ cartData = {
     M: 2
   }*/
   else {
-    cartData[itemId][size] = 1;
+    cartData[itemId][cartSize] = 1;
   }
 
 
@@ -193,7 +196,7 @@ Think of it like a scratchpad: use → update → discard.
 
     try{
 
-       let result = await axios.post(serverUrl + '/api/cart/add' , {itemId,size},{withCredentials:true})
+       let result = await axios.post(serverUrl + '/api/cart/add' , {itemId, size: cartSize},{withCredentials:true})
 
        console.log(result.data)
        setLoading(false)

@@ -4,6 +4,7 @@ import Home from './pages/Home'
 import Add from './pages/Add'
 import Lists from './pages/Lists'
 import Orders from './pages/Orders'
+import Users from './pages/Users'
 import Login from './pages/Login'
 import { adminDataContext } from './Context/AdminContext'
 
@@ -26,6 +27,8 @@ function App() {
      <Route path="/lists" element={<Lists/>} />
 
      <Route path="/orders" element={<Orders/>} />
+
+     <Route path="/users" element={<Users/>} />
 
      <Route path="/login" element={<Login/>} />                    
 

@@ -1,9 +1,5 @@
 import React, { useContext, useState } from 'react'
-{/*Files inside the public/ folder in Vite should not be imported like modules. For example: ".../public/vcart logo.png
-    
-This works because Vite serves files in public/ as static assets.    */}
 import Logo from "/vcart logo.png"
-// import google from '../assets/google.webp'
 import { useNavigate } from 'react-router-dom'
 import { BsEye } from "react-icons/bs";
 import { TbEyeClosed } from "react-icons/tb";
@@ -13,8 +9,6 @@ import { userDataContext } from '../Context/UserContext';
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { signInWithPopup } from 'firebase/auth';
-import { auth, provider } from '../../utilities/Firebase';
 
 const signupSchema = z.object({
   name: z.string().trim().min(3, 'Name must be at least 3 characters'),
@@ -23,159 +17,134 @@ const signupSchema = z.object({
 })
 
 function Registeration() {
+  let navigate = useNavigate()
+  let [showPassword, setShowPassword] = useState(false)
 
+  let { serverUrl } = useContext(authDataContext)
+  let { userData, setUserData, loading, setLoading, getCurrentUser } = useContext(userDataContext)
 
-    let navigate=useNavigate()
-    let [showPassword,setShowPassword]=useState(false)
+  const { register, handleSubmit, formState: { errors, isSubmitting }, setError, reset } = useForm({
+    resolver: zodResolver(signupSchema),
+    mode: 'onBlur',
+    defaultValues: { name: '', email: '', password: '' }
+  })
 
-    let {serverUrl}=useContext(authDataContext)
-
-    let {userData,setUserData,loading,setLoading,getCurrentUser}=useContext(userDataContext)
-
-    const { register, handleSubmit, formState: { errors, isSubmitting }, setError, reset } = useForm({
-      resolver: zodResolver(signupSchema),
-      mode: 'onBlur',
-      defaultValues: { name: '', email: '', password: '' }
-    })
-
-    
-
-
-    const handleRegister = async (values) => {
-      setLoading(true)
-      try {
-        const result = await axios.post(serverUrl + "/api/auth/register", values, { withCredentials: true })
-        setUserData(result.data)
-        await getCurrentUser()
-        navigate("/")
-        reset()
-      } catch (error) {
-        const apiMessage = error.response?.data?.message || 'Registration failed'
-        setError('root', { type: 'manual', message: apiMessage })
-      } finally {
-        setLoading(false)
-      }
+  const handleRegister = async (values) => {
+    setLoading(true)
+    try {
+      const result = await axios.post(serverUrl + "/api/auth/register", values, { withCredentials: true })
+      setUserData(result.data)
+      await getCurrentUser()
+      navigate("/")
+      reset()
+    } catch (error) {
+      const apiMessage = error.response?.data?.message || 'Registration failed'
+      setError('root', { type: 'manual', message: apiMessage })
+    } finally {
+      setLoading(false)
     }
-
-    // const googleRegister=async()=>{
-    //     try{
-
-    //         const response= await  signInWithPopup(auth,provider)
-
-    //         let user=response.user
-
-    //         let name=user.displayName
-
-    //         let email=user.email
-
-    //  let result=await axios.post(serverUrl+"/api/auth/googlelogin",{
-    //     name,email
-    //  },{withCredentials:true})
-
-
-    //  setUserData(result.data)
-    // console.log("Registered with Google successfully.",result.data)     
-
-    //  await getCurrentUser()
-
-    // navigate('/') 
-        
- 
-
-    //     }catch(error){
-    //        console.log("Google Login error ❌", error.response?.data || error.message)
-    //        setLoading(false)    
-    //     }
-    // }
+  }
 
   return (
-    <div className='w-[100vw] h-[100vh] bg-gradient-to-b from-[#0b1220] via-[#0e1a2b] to-[#0b1220] text-white flex flex-col items-center justify-start pb-[20px] overflow-hidden relative'>
+    <div className='min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex flex-col items-center justify-center p-6 relative overflow-hidden'>
+      {/* Background decoration */}
+      <div className='absolute inset-0 bg-[url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.1"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")] opacity-20'></div>
 
-  
-    {/*Logo and name at the top of registeration page */}    
-    <div className='w-[100%] h-[80px] flex items-center justify-start px-[30px] gap-[10px] cursor-pointer' onClick={()=>navigate("/")}>
+      {/* Logo and name at the top */}
+      <div className='absolute top-8 left-8 flex items-center gap-3 z-10 cursor-pointer' onClick={() => navigate("/")}>
+        <img src={Logo} className='w-10 h-10' alt="Logo" />
+        <h1 className='text-2xl font-bold text-white'>IMK Autos</h1>
+      </div>
 
-     <img src={Logo} className='w-[40px] pt-2'/>
-     
-     <h1 className='text-[22px] font-semibold tracking-wide'>OneCart</h1>
-
-    </div>
-
-    <div className='w-[100%] flex flex-col items-center justify-center absolute top-[30px]'>
- {/*name and description at the top of registeration page */}  
-    <div className='w-[100%] h-[100px] flex items-center justify-center flex-col gap-[6px]' >
-       
-       <span className='text-[28px] font-semibold'>Create your account</span>
-       <span className='text-[14px] text-[#bcd]'>Join and start your journey</span>
-
-    </div>
-
-{/*Form div */}
-    <div className='max-w-[520px] w-[92%] bg-[#0e1626]/60 border border-[#2b3b5a] backdrop-blur-xl rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.35)] flex items-center justify-center p-6'>
-    {/*backdrop-blur-2xl= It applies a heavy blur effect to the background behind the element,*/}
-
-
-      <form action="" className='w-[100%] flex flex-col items-center justify-start gap-[14px]' onSubmit={handleSubmit(handleRegister)}>
-
-       
-        {/* <div className='w-[90%] h-[50px] bg-[#42656cae]  rounded-lg flex items-center justify-center gap-[10px] py-[20px] cursor-pointer'
-        onClick={googleRegister}>
-
-            <img src={google} className='w-[20px]'/> Registeration with Google
-
-        </div> */}
-
-     <div className='w-[100%] h-[20px] flex items-center justify-center gap-[10px]'>
-
-      
-
-      
+      <div className='w-full max-w-md relative z-10 animate-fade-in'>
+        {/* Header */}
+        <div className='text-center mb-8'>
+          <h2 className='text-4xl font-bold text-white mb-2'>Create Your Account</h2>
+          <p className='text-gray-300'>Join and start your journey</p>
         </div>
 
+        {/* Form */}
+        <div className='bg-white/10 dark:bg-gray-800/90 backdrop-blur-xl border border-white/20 dark:border-gray-700 rounded-2xl shadow-2xl p-8'>
+          <form className='space-y-6' onSubmit={handleSubmit(handleRegister)}>
+            {/* Name */}
+            <div>
+              <input
+                type='text'
+                {...register('name')}
+                placeholder='Full Name'
+                className='w-full h-12 bg-white/10 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 font-medium transition-all'
+              />
+              {errors.name && (
+                <span className='block mt-2 text-sm text-red-400'>{errors.name.message}</span>
+              )}
+            </div>
 
-      <div className='w-[100%] flex flex-col items-center justify-center gap-[12px] '>
+            {/* Email */}
+            <div>
+              <input
+                type='email'
+                {...register('email')}
+                placeholder='Email'
+                className='w-full h-12 bg-white/10 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 font-medium transition-all'
+              />
+              {errors.email && (
+                <span className='block mt-2 text-sm text-red-400'>{errors.email.message}</span>
+              )}
+            </div>
 
-       <input type='text' className='w-[100%] h-[50px] border border-[#2b3b5a] focus:border-[#5f8cff] outline-none backdrop-blur-xl rounded-lg shadow-lg bg-transparent  placeholder-[#cfe] px-[16px] font-medium' placeholder='User Name'
-        {...register('name')} />
-        {errors.name && <span className='w-full text-left text-[12px] text-[#ff8b8b]'>{errors.name.message}</span>}
+            {/* Password */}
+            <div>
+              <div className='relative'>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  {...register('password')}
+                  placeholder='Password'
+                  className='w-full h-12 bg-white/10 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 pr-12 font-medium transition-all'
+                />
+                <button
+                  type='button'
+                  onClick={() => setShowPassword(prev => !prev)}
+                  className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors'
+                >
+                  {showPassword ? <TbEyeClosed className='w-5 h-5' /> : <BsEye className='w-5 h-5' />}
+                </button>
+              </div>
+              {errors.password && (
+                <span className='block mt-2 text-sm text-red-400'>{errors.password.message}</span>
+              )}
+            </div>
 
-       <input type='email' className='w-[100%] h-[50px] border border-[#2b3b5a] focus:border-[#5f8cff] outline-none backdrop-blur-xl rounded-lg shadow-lg bg-transparent  placeholder-[#cfe] px-[16px] font-medium' placeholder='Email'
-        {...register('email')} />
-        {errors.email && <span className='w-full text-left text-[12px] text-[#ff8b8b]'>{errors.email.message}</span>}
+            {/* Root error */}
+            {errors.root && (
+              <div className='bg-red-500/10 border border-red-500/50 rounded-lg p-3 text-sm text-red-400'>
+                {errors.root.message}
+              </div>
+            )}
 
-       {/*password */}
+            {/* Submit button */}
+            <button
+              type='submit'
+              disabled={loading || isSubmitting}
+              className='w-full h-12 gradient-primary text-white rounded-lg font-semibold disabled:opacity-70 transition-all shadow-lg hover:shadow-xl hover:opacity-90'
+            >
+              {loading || isSubmitting ? 'Creating Account...' : 'Create Account'}
+            </button>
 
-       <div className='w-[100%] flex items-center justify-center relative'>
-
-       <input type={showPassword?"text":"password"}
-       className='w-[100%] h-[50px] border border-[#2b3b5a] focus:border-[#5f8cff] outline-none backdrop-blur-xl rounded-lg shadow-lg bg-transparent  placeholder-[#cfe] px-[16px] font-medium' placeholder='Password'
-        {...register('password')} /> 
-       <span className='flex items-center justify-center text-[20px] absolute right-[12px]' onClick={()=>setShowPassword(prev=>!prev)}>
-         {showPassword?<TbEyeClosed/>: <BsEye/>}
-         </span>
-
-       </div>
-      {errors.password && <span className='w-full text-left text-[12px] text-[#ff8b8b]'>{errors.password.message}</span>}
-      {errors.root && <div className='w-full text-left text-[12px] text-[#ff8b8b]'>{errors.root.message}</div>}
-
-      <button type='submit' className='w-[100%] h-[50px] bg-[#5f6df7] hover:bg-[#4e5be6] rounded-lg flex items-center justify-center mt-[6px] text-[16px] font-semibold disabled:opacity-70 transition-colors'
-       disabled={loading || isSubmitting} >{(loading || isSubmitting) ? "Loading":"Create Account"}</button>
-
-
-  <p className='flex gap-[10px]'>You have any account? <span className='text-[#5555f6cf] text-[17px] font-semibold cursor-pointer' onClick={()=>navigate("/login")}>Login</span> </p>             
-
-        </div>  
-
-
-
-     </form>
-
-
-    </div>
-
-    </div>
-        
+            {/* Login link */}
+            <p className='text-center text-gray-300 text-sm'>
+              Already have an account?{' '}
+              <button
+                type='button'
+                onClick={() => navigate("/login")}
+                className='text-purple-400 hover:text-purple-300 font-semibold transition-colors'
+              >
+                Login
+              </button>
+            </p>
+          </form>
         </div>
+      </div>
+    </div>
   )
 }
 

@@ -1,186 +1,311 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { shopDataContext } from '../Context/ShopContext'
-import { FaStar } from "react-icons/fa6";
-import { FaStarHalfAlt } from "react-icons/fa";
-import RelatedProduct from '../Components/RelatedProduct';
-
-
+import RelatedProduct from '../Components/RelatedProduct'
+import { FiCheck, FiX } from 'react-icons/fi'
+import { FaCheckCircle } from 'react-icons/fa'
 
 function ProductDetailts() {
+  const { productId } = useParams()
+  const navigate = useNavigate()
+  const { products, currency, addToCart } = useContext(shopDataContext)
+  const [productData, setProductData] = useState(null)
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [loading, setLoading] = useState(true)
 
-    let {productId}=useParams()
+  useEffect(() => {
+    const fetchProduct = () => {
+      const foundProduct = products.find(item => item._id === productId)
+      if (foundProduct) {
+        setProductData(foundProduct)
+        // Set default image to first image in array, or fallback
+        const images = foundProduct.images || []
+        if (images.length > 0) {
+          setSelectedImageIndex(0)
+        }
+      }
+      setLoading(false)
+    }
 
-    let {products,currency,      cartItem,addToCart,getCartCount,setCartItem}=useContext(shopDataContext)
+    if (products.length > 0) {
+      fetchProduct()
+    }
+  }, [productId, products])
 
-    let [productData, setProductData]=useState(false)
-
-    const [image , setImage]=useState('')
-
-    const [image1 , setImage1]=useState('')
-    
-    const [image2 , setImage2]=useState('')
-    
-    const [image3 , setImage3]=useState('')
-    
-    const [image4, setImage4]=useState('')
-    
-    const [size , setSize]=useState('') 
-
-const fetchProducts = async () => {
-
- //The find() method is used to search an array and return the first item that matches a condition.   
-  const foundProduct = products.find(item => item._id === productId);
-
-  if (foundProduct) {
-    setProductData(foundProduct);
-    setImage(foundProduct.image1);
-    setImage1(foundProduct.image1);
-    setImage2(foundProduct.image2);
-    setImage3(foundProduct.image3);
-    setImage4(foundProduct.image4);
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading vehicle details...</p>
+        </div>
+      </div>
+    )
   }
-}
 
- useEffect(()=>{
+  if (!productData) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Vehicle Not Found</h2>
+          <button
+            onClick={() => navigate('/product')}
+            className="gradient-primary text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+          >
+            Back to Inventory
+          </button>
+        </div>
+      </div>
+    )
+  }
 
-    fetchProducts() 
+  // Get images array or fallback to empty array
+  const images = productData.images || []
+  const displayImage = images[selectedImageIndex] || (images.length > 0 ? images[0] : 'https://via.placeholder.com/800x600?text=Vehicle+Image')
 
- },[productId,products])
+  // Get status badge styling
+  const getStatusBadgeClass = (status) => {
+    switch (status?.toUpperCase()) {
+      case 'AVAILABLE':
+        return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+      case 'RESERVED':
+        return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300'
+      case 'SOLD':
+        return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
+      default:
+        return 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+    }
+  }
 
-    
+  const handleAddToCart = () => {
+    if (productData.status?.toUpperCase() === 'AVAILABLE' || !productData.status) {
+      addToCart(productData._id, 'default')
+    }
+  }
 
   return (
-    <div>
-
-       <div className='w-[99vw] min-h-[122vh] md:h-[100vh] bg-gradient-to-b from-[#141414] to-[#0c2025] flex items-center justify-start flex-col lg:flex-row gap-[20px]  '>
-        
-         <div className='lg:w-[50vw] md:w-[90vw] lg:h-[90vh] h-[50vh] mt-[70px] flex items-center justify-center md:gap-[10px] gap-[30px] flex-col-reverse lg:flex-row'>
-
-         <div className='lg:w-[20%] md:w-[80%] h-[10%] lg:h-[90%]  flex items-center justify-center gap-[50px] lg:gap-[25px] lg:flex-col flex-wrap '>
-
-           <div className='md:w-[95px] w-[50px] h-[50px] md:h-[95px] bg-slate-300 border-[1px] border-[#80808049] rounded-md '>
-
-            <img src={image1} className='w-[100%] h-[100%] cursor-pointer rounded-md' onClick={()=>setImage(image1)}/>
-
-           </div>
-
-           <div className='md:w-[95px] w-[50px] h-[50px] md:h-[95px] bg-slate-300 border-[1px] border-[#80808049] rounded-md '>
-
-            <img src={image2} className='w-[100%] h-[100%] cursor-pointer rounded-md' onClick={()=>setImage(image2)}/>
-
-           </div>
-
-
-           <div className='md:w-[95px] w-[50px] h-[50px] md:h-[95px] bg-slate-300 border-[1px] border-[#80808049] rounded-md '>
-
-            <img src={image3} className='w-[100%] h-[100%] cursor-pointer rounded-md' onClick={()=>setImage(image3)}/>
-
-           </div>
-
-
-
-           <div className='md:w-[95px] w-[50px] h-[50px] md:h-[95px] bg-slate-300 border-[1px] border-[#80808049] rounded-md '>
-
-            <img src={image4} className='w-[100%] h-[100%] cursor-pointer rounded-md' onClick={()=>setImage(image4)}/>
-
-           </div>                  
-
-
-
-         </div>
-
-        <div className='lg:w-[60%] lg:h-[78%] h-[70%] border-[1px] border-[#80808049] rounded-md overflow-hidden'>
-
-          <img src={image} className='w-[100%] lg:h-[100%] text-[30px] text-[white] text-center rounded-md object-fill'/> 
-
-            </div> 
-
-         </div>
-
-      
-         <div className='lg:w-[50vw] w-[100vw] lg:h-[90vh] h-[50vh] lg:mt-[80px] flex items-start justify-start flex-col py-[20px] px-[30px] md:pb-[20px] md:pl-[20px] lg:pl-[0px] lg:px-[0px] lg:py-[0px] gap-[10px]  '>
-
-          { productData &&  <h1 className='text-[40px] font-semibold text-[aliceblue] '>{productData.name.toUpperCase()}</h1>}
-
-         {/*Stars div */}
-          <div className='flex items-center gap-1'> 
-            <FaStar className='text-[20px] fill-[#FFD700]' /> 
-
-            <FaStar className='text-[20px] fill-[#FFD700]' />
-
-
-            <FaStar className='text-[20px] fill-[#FFD700]' />
-
-            <FaStar className='text-[20px] fill-[#FFD700]' />
-
-            <FaStarHalfAlt className='text-[20px] fill-[#FFD700]' />  
-
-            <p className='text-[18px] font-semibold pl-[5px] text-[white]  '>(124)    </p>                      
-            </div>
-
-            {/* Price div*/}
-
-            <p className='text-[30px] font-semibold pl-[5px] text-[white]'>{currency} {productData.price}</p>
-
-            <p className='w-[80%] md:w-[60%] text-[20px] font-semibold pl-[5px] text-[white] '>{productData.description} Best quality product and stylish , breadthable cotton cloth for kids. Easy to wash, super comfortable and designed for effortless style. </p>
-
-            {/*Sizes div */}
-
-          <div className='flex flex-col gap-[10px] my-[10px] '>
-
-            <p className='text-[25px] font-semibold pl-[5px] text-[white] '>Select Size </p>
-
-           <div className='flex gap-2'>
-            { 
-      productData && (
-           productData.sizes.map((item,index)=>(
-         <button key={index} className={`border py-2 px-4  bg-slate-300 rounded-md ${item=== size ? 'bg-[black] text-[#2f97f1] text-[21px]' : ''} `} onClick={()=>setSize(item)}>{item}</button>
-                ))
-            )
-            }
-
-            </div> 
-
-            <button className='text-[16px] active:bg-slate-500 cursor-pointer bg-[#495b61c9] py-[10px] px-[20px] rounded-2xl mt-[10px] border-[1px] border-[#80808049] text-[white] shadow:lg shadow-[black] w-[250px]'onClick={()=>addToCart(productData._id,size)}>Add to Cart</button>
-
-          </div>
-
-         <div className='w-[90%] h-[2px] bg-slate-700'></div>
-
-         <div className='w-[80%] text-[16px] text-[white] '>
-            <p>100% Original Product.</p>
-            <p>Cash on delivery is available on this product. </p>
-            <p>Fast return and exchange policy within 7 days.</p>
-         </div>
-
-
-         </div>
-
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
+      <div className="container mx-auto px-6 py-8">
+        {/* Breadcrumb */}
+        <div className="mb-6 text-sm text-gray-600 dark:text-gray-400">
+          <button onClick={() => navigate('/')} className="hover:text-purple-600 dark:hover:text-purple-400">
+            Home
+          </button>
+          {' / '}
+          <button onClick={() => navigate('/product')} className="hover:text-purple-600 dark:hover:text-purple-400">
+            Inventory
+          </button>
+          {' / '}
+          <span className="text-gray-900 dark:text-gray-100">
+            {productData.brand} {productData.model}
+          </span>
         </div>
 
-        <div className='w-[99vw] min-h-[70vh] bg-gradient-to-t from-[#141414] to-[#0c2025] flex items-start justify-start flex-col overflow-x-hidden md:pt-[200px] sm:pt-[200px] lg:pt-[40px] '>
-            
-            <div className='flex px-[20px] mt-[90px] lg:ml-[80px] ml-[0px] lg:mt-[20px] '>
-
-         <p className='border px-5 py-3 text-sm text-[white] '>Description</p>
-
-         <p className='border px-5 py-3 text-sm text-[white] '>Reviews (124)</p>         
-
+        <div className="grid lg:grid-cols-2 gap-8 mb-12">
+          {/* Image Gallery */}
+          <div className="space-y-4">
+            {/* Main Image */}
+            <div className="relative bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-lg">
+              <img
+                src={displayImage}
+                alt={`${productData.brand} ${productData.model}`}
+                className="w-full h-[500px] object-cover"
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/800x600?text=Vehicle+Image'
+                }}
+              />
+              {/* Status Badge */}
+              {productData.status && (
+                <div className="absolute top-4 right-4">
+                  <span className={`px-4 py-2 rounded-full text-sm font-medium shadow-lg ${getStatusBadgeClass(productData.status)}`}>
+                    {productData.status}
+                  </span>
+                </div>
+              )}
             </div>
 
-            <div className='w-[80%] md:h-[150px] h-[220px] bg-[#3336397c] border text-[white] text-[13px] md:text-[15px] lg:text-[20px] px-[10px] md:px-[30px] lg:ml-[100px] ml-[20px]  ' >
-         <p className='w-[95%] h-[90%] flex items-center justify-center'>
+            {/* Thumbnail Images */}
+            {images.length > 1 && (
+              <div className="grid grid-cols-4 gap-4">
+                {images.slice(0, 4).map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImageIndex(idx)}
+                    className={`relative overflow-hidden rounded-lg border-2 transition-all ${
+                      selectedImageIndex === idx
+                        ? 'border-purple-500 ring-2 ring-purple-200 dark:ring-purple-800'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600'
+                    }`}
+                  >
+                    <img
+                      src={img}
+                      alt={`Thumbnail ${idx + 1}`}
+                      className="w-full h-24 object-cover"
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/200x150?text=Image'
+                      }}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
-          Upgrade your wardobe with the stylish slim-fit cotton shirt , available now on OneCart.Best quality product and stylish , breadthable cotton cloth for kids. Easy to wash, super comfortable and designed for effortless style.     
+          {/* Product Details */}
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                {productData.brand} {productData.model}
+              </h1>
+              <p className="text-2xl text-gray-600 dark:text-gray-400 mb-4">{productData.year}</p>
+              <div className="flex items-center gap-4 mb-6">
+                <span className="text-4xl font-bold text-purple-600 dark:text-purple-400">
+                  {currency}{productData.price?.toLocaleString() || 'N/A'}
+                </span>
+                {productData.condition && (
+                  <span className="px-4 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium">
+                    {productData.condition}
+                  </span>
+                )}
+              </div>
+            </div>
 
+            {/* Key Specifications */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Key Specifications</h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Mileage</p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    {productData.mileage?.toLocaleString() || 'N/A'} miles
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Fuel Type</p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    {productData.fuelType || 'N/A'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Transmission</p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    {productData.transmission || 'N/A'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Engine Size</p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    {productData.engineSize || 'N/A'}
+                  </p>
+                </div>
+                {productData.bodyType && (
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Body Type</p>
+                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                      {productData.bodyType}
+                    </p>
+                  </div>
+                )}
+                {productData.color && (
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Color</p>
+                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                      {productData.color}
+                    </p>
+                  </div>
+                )}
+                {productData.location && (
+                  <div className="col-span-2">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Location</p>
+                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                      {productData.location}
+                    </p>
+                  </div>
+                )}
+                {productData.stockNumber && (
+                  <div className="col-span-2">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Stock Number</p>
+                    <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                      {productData.stockNumber}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Description */}
+            {productData.description && (
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Description</h2>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-line">
+                  {productData.description}
                 </p>
+              </div>
+            )}
+
+            {/* Features/Policy */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Why Buy With Us</h2>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <FaCheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-600 dark:text-gray-400">100% Original Vehicle</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <FaCheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-600 dark:text-gray-400">Full Documentation Provided</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <FaCheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-600 dark:text-gray-400">Professional Inspection & Compliance</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <FaCheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-600 dark:text-gray-400">Transparent Pricing - No Hidden Fees</p>
+                </div>
+              </div>
             </div>
 
-        <RelatedProduct category={productData.category} subCategory={productData.subCategory} currentProductId={productData._id} />    
+            {/* Add to Cart Button */}
+            <div className="space-y-4">
+              {productData.status?.toUpperCase() === 'AVAILABLE' || !productData.status ? (
+                <button
+                  onClick={handleAddToCart}
+                  className="w-full gradient-primary text-white font-semibold text-lg px-8 py-4 rounded-lg hover:opacity-90 transition-opacity shadow-lg hover:shadow-xl"
+                >
+                  Add to Cart
+                </button>
+              ) : (
+                <button
+                  disabled
+                  className="w-full bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-semibold text-lg px-8 py-4 rounded-lg cursor-not-allowed"
+                >
+                  {productData.status === 'SOLD' ? 'Sold Out' : 'Reserved'}
+                </button>
+              )}
+              <button
+                onClick={() => navigate('/product')}
+                className="w-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-lg px-8 py-4 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              >
+                Back to Inventory
+              </button>
+            </div>
+          </div>
+        </div>
 
-            </div> 
-
+        {/* Related Products */}
+        {productData.brand && (
+          <div className="mt-12">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+              Related Vehicles
+            </h2>
+            <RelatedProduct
+              brand={productData.brand}
+              currentProductId={productData._id}
+            />
+          </div>
+        )}
+      </div>
     </div>
   )
 }

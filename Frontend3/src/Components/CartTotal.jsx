@@ -1,50 +1,40 @@
 import React, { useContext } from 'react'
 import { shopDataContext } from '../Context/ShopContext'
-import Title from './Title'
 
 function CartTotal() {
-
-    const {delivery_fee,currency,getCartAmount}= useContext(shopDataContext)
+  const { delivery_fee, currency, getCartAmount } = useContext(shopDataContext)
+  const subtotal = getCartAmount()
+  const total = subtotal === 0 ? 0 : subtotal + delivery_fee
 
   return (
-    <div className='w-full lg:ml-[30px] ' >
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 animate-fade-in">
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Order Summary</h2>
 
-        <div className='text-xl py-[10px'>
-        
-          <Title text1={"CART"} text2={"TOTALS"} />
-
+      <div className="space-y-4">
+        {/* Subtotal */}
+        <div className="flex justify-between items-center py-2">
+          <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
+          <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            {currency}{subtotal.toLocaleString()}.00
+          </span>
         </div>
 
-     <div className='flex flex-col gap-2 mt-2 text-sm p-[30px] border-[2px] border-[#4d8890] '>
-      
-       <div className='flex justify-between text-[white] text-[18px] p-[10px] '>
-
-        <p>Sutotal</p>
-
-        <p>{currency} {getCartAmount()}.00</p>
-
-       </div>
-
-       <hr/>
-        <div className='flex justify-between text-[white] text-[18px] p-[10px] '>
-
-          <p>Shipping Fee</p>
-          <p>{currency} {delivery_fee} </p>
-
+        {/* Delivery Fee */}
+        <div className="flex justify-between items-center py-2 border-t border-gray-200 dark:border-gray-700 pt-4">
+          <span className="text-gray-600 dark:text-gray-400">Shipping Fee</span>
+          <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            {currency}{delivery_fee}.00
+          </span>
         </div>
 
-       <hr/> 
-          
-          <div className='flex justify-between text-[white] text-[18px] p-[10px] '>
-            <b>Total</b>
-            <b>{currency} {getCartAmount()=== 0 ? 0 : getCartAmount()+delivery_fee} </b>
-
-
-
-          </div>
-
-     </div>
-
+        {/* Total */}
+        <div className="flex justify-between items-center py-4 border-t-2 border-gray-300 dark:border-gray-600 pt-4 mt-4">
+          <span className="text-xl font-bold text-gray-900 dark:text-gray-100">Total</span>
+          <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+            {currency}{total.toLocaleString()}.00
+          </span>
+        </div>
+      </div>
     </div>
   )
 }

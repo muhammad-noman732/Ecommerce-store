@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react'
 import Logo from "/vcart logo.png"
-
 import { useNavigate } from 'react-router-dom'
 import { BsEye } from "react-icons/bs";
 import { TbEyeClosed } from "react-icons/tb";
@@ -17,16 +16,12 @@ const adminLoginSchema = z.object({
 })
 
 function Login() {
+  let [showPassword, setShowPassword] = useState(false)
+  let [loading, setLoading] = useState(false)
 
-    let [showPassword,setShowPassword] =useState(false)
-     let [loading,setLoading]=useState(false)
-
-     let {serverUrl} = useContext(authDataContext)
-
-     let {adminData,setAdminData,getAdmin}=useContext(adminDataContext)
-
-     let navigate =useNavigate()
-
+  let { serverUrl } = useContext(authDataContext)
+  let { adminData, setAdminData, getAdmin } = useContext(adminDataContext)
+  let navigate = useNavigate()
 
   const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm({
     resolver: zodResolver(adminLoginSchema),
@@ -36,90 +31,92 @@ function Login() {
 
   const AdminLogin = async (values) => {
     try {
-       let result = await axios.post(serverUrl+"/api/auth/adminlogin", values, { withCredentials:true }) 
-       setAdminData(result.data)
-       await getAdmin()
-       navigate("/")
+      let result = await axios.post(serverUrl + "/api/auth/adminlogin", values, { withCredentials: true })
+      setAdminData(result.data)
+      await getAdmin()
+      navigate("/")
     } catch (error) {
-       setAdminData(null)
-       const apiMessage = error.response?.data?.message || 'Admin login failed'
-       setError('root', { type: 'manual', message: apiMessage })
+      setAdminData(null)
+      const apiMessage = error.response?.data?.message || 'Admin login failed'
+      setError('root', { type: 'manual', message: apiMessage })
     }
-  }   
+  }
 
   return (
-    <div className='w-[100vw] h-[100vh] bg-gradient-to-b from-[#0b1220] via-[#0e1a2b] to-[#0b1220] text-white flex flex-col items-center justify-start pb-[20px]  overflow-hidden relative'>
+    <div className='min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex flex-col items-center justify-center p-6 relative overflow-hidden'>
+      {/* Background decoration */}
+      <div className='absolute inset-0 bg-[url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.1"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")] opacity-20'></div>
 
-  
-    {/*Logo and name at the top of registeration page */}    
-    <div className='w-[100%] h-[80px] flex items-center justify-start px-[30px] gap-[10px] cursor-pointer' >
+      {/* Logo and name at the top */}
+      <div className='absolute top-8 left-8 flex items-center gap-3 z-10'>
+        <img src={Logo} className='w-10 h-10' alt="Logo" />
+        <h1 className='text-2xl font-bold text-white'>IMK Autos</h1>
+      </div>
 
-     <img src={Logo} className='w-[40px] pt-2'/>
-     
-     <h1 className='text-[22px] font-semibold tracking-wide'>OneCart</h1>
-
-    </div>
-
-    <div className='w-[100%] flex flex-col items-center justify-center absolute top-[65px] gap-[24px]'>
- {/*name and description at the top of registeration page */}  
-    <div className='w-[100%] h-[100px] flex items-center justify-center flex-col gap-[8px]  '>
-       
-       <span className='text-[28px] font-semibold'>Admin dashboard</span>
-       <span className='text-[14px] text-[#bcd]'>Sign in to manage products and orders</span>
-
-    </div>
-
-{/*Form div */}
-    <div className='max-w-[520px] w-[92%] bg-[#0e1626]/60 border border-[#2b3b5a] backdrop-blur-xl rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.35)] flex items-center justify-center top-[100px] absolute p-6'>
-    {/*backdrop-blur-2xl= It applies a heavy blur effect to the background behind the element,*/}
-
-
-      <form action="" className='w-[100%] flex flex-col items-center justify-start gap-[14px]' onSubmit={handleSubmit(AdminLogin)}>
-
-
-
-
-      <div className='w-[100%] flex flex-col items-center justify-center gap-[12px] '>
-
-
-      <input type='email' className='w-[100%] h-[50px] border border-[#2b3b5a] focus:border-[#5f8cff] outline-none backdrop-blur-xl rounded-lg shadow-lg bg-transparent  placeholder-[#cfe] px-[16px] font-medium' placeholder='Email'
-       {...register('email')}
-       />
-      {errors.email && <span className='w-full text-left text-[12px] text-[#ff8b8b]'>{errors.email.message}</span>}
-
-       {/*password */}
-
-       <div className='w-[100%] flex items-center justify-center relative'>
-
-      <input type={showPassword?"text":"password"}
-       className='w-[100%] h-[50px] border border-[#2b3b5a] focus:border-[#5f8cff] outline-none backdrop-blur-xl rounded-lg shadow-lg bg-transparent  placeholder-[#cfe] px-[16px] font-medium' placeholder='Password'
-       {...register('password')} /> 
-       <span className='flex items-center justify-center text-[20px] absolute right-[12px]' onClick={()=>setShowPassword(prev=>!prev)}>
-         {showPassword?<TbEyeClosed/>: <BsEye/>}
-         </span>
-
-       </div>
-      {errors.password && <span className='w-full text-left text-[12px] text-[#ff8b8b]'>{errors.password.message}</span>}
-      {errors.root && <div className='w-full text-left text-[12px] text-[#ff8b8b]'>{errors.root.message}</div>}
-
-      <button type='submit' className='w-[100%] h-[50px] bg-[#5f6df7] hover:bg-[#4e5be6] rounded-lg flex items-center justify-center mt-[6px] text-[16px] font-semibold disabled:opacity-70 transition-colors'
-      disabled={loading || isSubmitting} >{(loading || isSubmitting) ? "Loading":"Login"}</button>
-
-
-            
-
-        </div>  
-
-
-
-     </form>
-
-
-    </div>
-
-    </div>
-        
+      <div className='w-full max-w-md relative z-10 animate-fade-in'>
+        {/* Header */}
+        <div className='text-center mb-8'>
+          <h2 className='text-4xl font-bold text-white mb-2'>Admin Dashboard</h2>
+          <p className='text-gray-300'>Sign in to manage vehicles and orders</p>
         </div>
+
+        {/* Form */}
+        <div className='bg-white/10 dark:bg-gray-800/90 backdrop-blur-xl border border-white/20 dark:border-gray-700 rounded-2xl shadow-2xl p-8'>
+          <form className='space-y-6' onSubmit={handleSubmit(AdminLogin)}>
+            {/* Email */}
+            <div>
+              <input
+                type='email'
+                {...register('email')}
+                placeholder='Email'
+                className='w-full h-12 bg-white/10 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 font-medium transition-all'
+              />
+              {errors.email && (
+                <span className='block mt-2 text-sm text-red-400'>{errors.email.message}</span>
+              )}
+            </div>
+
+            {/* Password */}
+            <div>
+              <div className='relative'>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  {...register('password')}
+                  placeholder='Password'
+                  className='w-full h-12 bg-white/10 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 pr-12 font-medium transition-all'
+                />
+                <button
+                  type='button'
+                  onClick={() => setShowPassword(prev => !prev)}
+                  className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors'
+                >
+                  {showPassword ? <TbEyeClosed className='w-5 h-5' /> : <BsEye className='w-5 h-5' />}
+                </button>
+              </div>
+              {errors.password && (
+                <span className='block mt-2 text-sm text-red-400'>{errors.password.message}</span>
+              )}
+            </div>
+
+            {/* Root error */}
+            {errors.root && (
+              <div className='bg-red-500/10 border border-red-500/50 rounded-lg p-3 text-sm text-red-400'>
+                {errors.root.message}
+              </div>
+            )}
+
+            {/* Submit button */}
+            <button
+              type='submit'
+              disabled={loading || isSubmitting}
+              className='w-full h-12 gradient-primary text-white rounded-lg font-semibold disabled:opacity-70 transition-all shadow-lg hover:shadow-xl hover:opacity-90'
+            >
+              {loading || isSubmitting ? 'Loading...' : 'Login'}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
   )
 }
 
