@@ -8,11 +8,11 @@ export const register=async(req,res)=>{
     
    try{
 
-    const {name,email,password}=req.body
+    const { name , email,password}=req.body
 
     //We have installed validator to validate email
 
-    const existUser=await User.findOne({email})
+    const existUser = await User.findOne({email})
 
     if(existUser){
         return res.status(400).json({message:"User already exists."})
@@ -35,7 +35,7 @@ export const register=async(req,res)=>{
     password:hashedPassword
    })
 
-   let token=await genToken(user._id, user.role)
+   let token = await genToken(user._id, user.role)
 
    {/*Now we are going to put token in cookie */}
 
@@ -69,7 +69,7 @@ options → An object containing various settings for security and behavior.
 export const login=async(req,res)=>{
     try{
 
-        let {email,password}=req.body
+        let {email,password} = req.body
 
 
         //	You passed an object with email key and its value

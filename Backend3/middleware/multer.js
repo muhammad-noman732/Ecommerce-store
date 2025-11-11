@@ -1,10 +1,9 @@
 import multer from "multer"
 
 
-const storage=multer.diskStorage({
+const storage = multer.diskStorage({
     destination:(req,file,cb)=>{
-
-        //temporary stores files in public folder
+      //temporary stores files in public folder
         cb(null,"./public")
 
     },

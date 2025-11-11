@@ -1,10 +1,11 @@
 import express from "express";
 import { User } from "../model/user.model.js"
-export const  addToCart=async(req,res)=>{
 
+
+export const  addToCart=async(req,res)=>{
     try{
 
-       let {itemId,size} = req.body;
+       let { itemId , size} = req.body;
        
        const userData = await User.findById(req.userId);
 
@@ -21,7 +22,7 @@ you're ensuring that cartData is defined as an object—even if the user does al
 
 Guard Against Undefined:
 If userData.cartData is undefined (for example, when a user has never added an item to their cart), using the logical OR (||) operator gives cartData an empty object ({}) so that you can safely add properties to it without getting an error. */
-      let cartData=userData.cartData || {};
+      let cartData = userData.cartData || {};
 
 
 
