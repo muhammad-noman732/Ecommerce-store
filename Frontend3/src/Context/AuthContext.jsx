@@ -1,15 +1,17 @@
-import React, { Children, createContext } from 'react'
+import React, { createContext, useMemo } from 'react'
 
 export const authDataContext = createContext()
 
 function AuthContext({children}) {
 
 
-  const serverUrl="http://localhost:7500"
+  const envServerUrl = (import.meta?.env?.VITE_API_BASE_URL || '').trim()
+  const fallbackServerUrl = 'http://localhost:7500'
+  const normalizedServerUrl = (envServerUrl || fallbackServerUrl).replace(/\/+$/, '')
 
-    let value={
-        serverUrl
-    }
+    const value = useMemo(() => ({
+        serverUrl: normalizedServerUrl
+    }), [normalizedServerUrl])
 
   return (
     <div>

@@ -20,6 +20,7 @@ function Login() {
   let [showPassword, setShowPassword] = useState(false)
 
   let { serverUrl } = useContext(authDataContext)
+  const adminRedirectUrl = ((import.meta?.env?.VITE_ADMIN_BASE_URL || '').trim() || window.location.origin).replace(/\/+$/, '')
   let { userData, setUserData, loading, setLoading, getCurrentUser } = useContext(userDataContext)
 
   const { register, handleSubmit, formState: { errors, isSubmitting }, setError } = useForm({
@@ -35,7 +36,7 @@ function Login() {
       setUserData(result.data)
       await getCurrentUser()
       if ((result.data?.role || (result.data?.data && result.data.data.role)) === 'ADMIN') {
-        window.location.href = 'http://localhost:5174/'
+        window.location.href = `${adminRedirectUrl}/`
       } else {
         navigate('/')
       }
