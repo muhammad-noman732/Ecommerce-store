@@ -7,7 +7,7 @@ export const genToken = async (userId, role) => {
         const token = await jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" })
         return token
     } catch (error) {
-        console.log("GenToken error", error)
+        // GenToken error
     }
 }
 
@@ -16,6 +16,6 @@ export const genToken1 = async (email) => {
         const token = await jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "7d" })
         return token
     } catch (error) {
-        console.log("GenToken1 error", error)
+        // GenToken1 error
     }
 }

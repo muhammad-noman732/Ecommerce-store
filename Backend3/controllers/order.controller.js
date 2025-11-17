@@ -30,8 +30,6 @@ export const placeOrder=async(req,res)=>{
       return res.status(201).json({message:"Order Placed."})  
 
     }catch(error){
-
-        console.log(error)
       return res.status(500).json({message:`Order Place error ${error}`})
     }
 }
@@ -48,7 +46,6 @@ export const userOrders=async(req,res)=>{
 
 
   }catch(error){
-        console.log(error)
       return res.status(500).json({message:`User's Order error ${error}`})
   }
 }
@@ -115,7 +112,6 @@ export const getStats = async(req,res)=>{
     })
 
   }catch(error){
-    console.log(error)
     return res.status(500).json({message:`Get Stats error ${error}`})
   }
 }

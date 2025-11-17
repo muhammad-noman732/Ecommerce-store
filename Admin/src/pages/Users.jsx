@@ -34,9 +34,9 @@ function Users() {
         setUsers(data)
       }
       
-      console.log("Users loaded:", { page: pageNum, loaded: data.length, total: totalCount })
+     
     } catch (error) {
-      console.log("Get Users error ", error.response?.data || error.message)
+      
     } finally {
       setLoading(false)
     }

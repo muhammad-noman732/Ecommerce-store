@@ -25,10 +25,7 @@ function UserContext({children}) {
          
          setUserData(result.data)
 
-         console.log("Get Current User Data ", result.data)
-
         }catch(error){
-          console.log("Get Current User data error ❌", error.response?.data || error.message)
           setUserData("")
                       
         }

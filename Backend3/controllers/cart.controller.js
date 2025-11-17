@@ -61,8 +61,6 @@ If userData.cartData is undefined (for example, when a user has never added an i
      return res.status(200).json({message:"Added to cart."})     
 
     }catch(error){
-
-        console.log(error)
          return res.status(500).json({message:`Add to Cart error  ${error}`}) 
     }
 
@@ -109,7 +107,6 @@ export const UpdateCart=async(req,res)=>{
 
 
     }catch(error){
-        console.log(error)
          return res.status(500).json({message:`Cart Update error  ${error}`})
     }
 }
@@ -127,13 +124,8 @@ export const getUserCart= async(req,res)=>{
       
       let cartData=await userData.cartData || {};
 
-
-      console.log("Fetched cart data for user:", cartData);
-
-
       return res.status(200).json(cartData)
     }catch(error){
-        console.log(error)
          return res.status(500).json({message:`Get User Cart data error  ${error}`})
     }
 }

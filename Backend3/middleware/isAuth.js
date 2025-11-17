@@ -22,7 +22,7 @@ const isAuth=async(req,res,next)=>{
             return res.status(400).json({message:"User does not has token"})
         }
 
-      console.log("Token from cookie:", token)   
+      // Token from cookie   
 
         let verifyToken= await jwt.verify(token,process.env.JWT_SECRET)
 

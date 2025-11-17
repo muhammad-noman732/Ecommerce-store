@@ -38,10 +38,8 @@ function ShopContext({children}) {
             const productsData = result.data?.data || result.data || []
             setProducts(productsData)
 
-            console.log("Get All products", productsData)
-
         }catch(error){
-          console.log("Get Products  error ❌", error.response?.data || error.message)
+          // Error handled silently
         }
 
     }
@@ -190,21 +188,17 @@ Think of it like a scratchpad: use → update → discard.
 
   setCartItem(cartData);
 
-  console.log(cartData)
-
   if(userData){
 
     try{
 
        let result = await axios.post(serverUrl + '/api/cart/add' , {itemId, size: cartSize},{withCredentials:true})
 
-       console.log(result.data)
        setLoading(false)
 
        await getUserCart()
 
     }catch(error){
-          console.log("Add to cart error ❌", error.response?.data || error.message)
           setLoading(false)
     }
      
@@ -222,10 +216,8 @@ const getUserCart=async()=>{
 
       setCartItem(result.data)
 
-      console.log("User Cart",result.data)
-
     }catch(error){
-          console.log("Get User cart error ❌", error.response?.data || error.message)
+          // Error handled silently
     }
 };
 
@@ -255,7 +247,7 @@ const updateQuantity=async(itemId , size , quantity)=>{
         await getUserCart()
 
      }catch(error){
-          console.log("Update cart data error ❌", error.response?.data || error.message)
+          // Error handled silently
      }
  }
 
@@ -294,8 +286,7 @@ cartItem[itemId][size] = quantity */
             totalCount += cartItem[items][item]
                     }
         }catch(error){
-
-             console.log(error)
+             // Error handled silently
                 }
             }
         }

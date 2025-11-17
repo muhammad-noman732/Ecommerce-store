@@ -16,7 +16,7 @@ function Orders() {
       const result = await axios.post(serverUrl + '/api/order/list', {}, { withCredentials: true })
       setOrders(result.data.reverse())
     } catch (error) {
-      console.log("Load order data error ❌", error.response?.data || error.message)
+     
     } finally {
       setLoading(false)
     }
@@ -29,7 +29,7 @@ function Orders() {
         await fetchAllOrders()
       }
     } catch (error) {
-      console.log("Status Update error ❌", error.response?.data || error.message)
+   
     }
   }
 

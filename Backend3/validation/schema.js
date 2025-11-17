@@ -16,6 +16,14 @@ export const adminLoginSchema = z.object({
     password: z.string().min(8, "Password must be at least 8 characters")
 })
 
+export const contactSchema = z.object({
+    name: z.string().trim().min(2, "Name must be at least 2 characters"),
+    email: z.string().trim().email("Invalid email address"),
+    phone: z.string().optional(),
+    subject: z.string().trim().min(5, "Subject must be at least 5 characters"),
+    message: z.string().trim().min(10, "Message must be at least 10 characters")
+})
+
 export const validate = (schema) => (req, res, next) => {
     try {
         const result = schema.safeParse(req.body)

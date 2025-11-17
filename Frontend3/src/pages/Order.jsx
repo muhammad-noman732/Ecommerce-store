@@ -14,7 +14,6 @@ function Order() {
     try {
       setLoading(true)
       const result = await axios.post(serverUrl + "/api/order/userorder", {}, { withCredentials: true })
-      console.log(result.data)
 
       if (result.data) {
         let allOrderItem = []
@@ -34,7 +33,7 @@ function Order() {
         setOrderData(allOrderItem.reverse())
       }
     } catch (error) {
-      console.log("Load order data error ❌", error.response?.data || error.message)
+      // Error handled silently
     } finally {
       setLoading(false)
     }

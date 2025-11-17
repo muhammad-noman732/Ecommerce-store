@@ -23,11 +23,10 @@ function Nav() {
     const handleLogOut=async()=>{
         try{
          let result=await axios.post(serverUrl+"/api/auth/logout",{}, {withCredentials:true})
-         console.log("User logged out successfully.",result)
          setUserData("")
          navigate("/login")
         }catch(error){
-        console.log(error)            
+        // Error handled silently
         }
     }
 

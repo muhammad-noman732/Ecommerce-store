@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { FiPhone, FiMail, FiMapPin, FiSend } from 'react-icons/fi'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import axios from 'axios'
+import { authDataContext } from '../Context/AuthContext'
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -15,6 +17,9 @@ const contactSchema = z.object({
 function Contact() {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
+  
+  const { serverUrl } = useContext(authDataContext)
   
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     resolver: zodResolver(contactSchema)
@@ -22,16 +27,22 @@ function Contact() {
 
   const onSubmit = async (data) => {
     setSubmitting(true)
-    // TODO: Implement backend API call here
-    console.log('Contact form data:', data)
+    setError('')
     
-    // Simulate API call
-    setTimeout(() => {
-      setSubmitting(false)
+    try {
+      const result = await axios.post(serverUrl + '/api/contact/submit', data, {
+        withCredentials: true
+      })
+      
       setSubmitted(true)
       reset()
       setTimeout(() => setSubmitted(false), 5000)
-    }, 1000)
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || 'Failed to send message. Please try again later.'
+      setError(errorMessage)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -125,6 +136,14 @@ function Contact() {
                   <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                     <p className="text-green-700 dark:text-green-300 font-medium">
                       ✓ Thank you! Your message has been sent. We'll get back to you soon.
+                    </p>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                    <p className="text-red-700 dark:text-red-300 font-medium">
+                      ✗ {error}
                     </p>
                   </div>
                 )}

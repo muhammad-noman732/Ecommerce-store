@@ -68,9 +68,9 @@ function Lists() {
         setList(data)
       }
       
-      console.log("Vehicles loaded:", { page: pageNum, loaded: data.length, total: totalCount })
+     
     } catch (error) {
-      console.log("Get Listing error ", error.response?.data || error.message)
+
     } finally {
       setLoading(false)
     }
@@ -113,7 +113,7 @@ function Lists() {
       setPage(1)
       fetchList(1, false)
     } catch (error) {
-      console.log("Remove error", error.response?.data || error.message)
+     
     }
   }
 

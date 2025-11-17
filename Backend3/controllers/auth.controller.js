@@ -57,8 +57,6 @@ options → An object containing various settings for security and behavior.
    return res.status(201).json(user)
 
    }catch(error){
-
-    console.log("Register error.")
     
     return res.status(500).json({message:`Register error ${error}`})
    
@@ -121,8 +119,6 @@ The reason is that res.json() method accepts only one argument, which should be:
    return res.status(201).json(exitUser)
 
     }catch(error){
-
-     console.log("Login error.")
     
     return res.status(500).json({message:`Login error ${error}`})       
 

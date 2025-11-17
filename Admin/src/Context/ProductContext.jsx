@@ -42,12 +42,12 @@ let [backEndImage4,setBackEndImage4]=useState(null)
 
          setList(result.data)
 
-        console.log("All Get Listing Data",result.data) 
+       
          
             
 
         }catch(error){
-     console.log("Get Listing  error ❌", error.response?.data || error.message)
+    
         }
     }
 
@@ -61,12 +61,11 @@ const removeList=async(id)=>{
 
     let result = await axios.delete(serverUrl+`/api/product/remove/${id}`,{withCredentials:true})
 
-    console.log("Product removed successfully.")
     
     await fetchList()  
 
     }catch(error){
-     console.log("Product remove  error ❌", error.response?.data || error.message)        
+ 
     }
 
 }

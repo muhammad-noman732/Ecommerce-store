@@ -123,8 +123,6 @@ export const listProduct= async (req,res)=> {
 
   }catch(error){
 
-    console.log("Listing Product error")
-
     return res.status(500).json({message:`ListProduct error ${error}`})
 
   }
@@ -140,8 +138,6 @@ export const removeProduct=async(req,res)=>{
     return res.status(200).json("You have successfully  deleted the list ")
 
   }catch(error){
-
-    console.log("Product delete error")
 
     return res.status(500).json( `Deleting Product error ${error}`)
 
@@ -214,7 +210,6 @@ export const updateProduct=async(req,res)=>{
       return res.status(201).json(product)
 
   }catch(error){
-    console.log("Product Update error")
 
     return res.status(500).json( `Updatong Product error ${error}`)
   }

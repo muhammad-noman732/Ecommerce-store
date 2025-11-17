@@ -9,6 +9,7 @@ import userRouter from "./routes/user.route.js";
 import productRouter from "./routes/product.route.js";
 import cartRouter from "./routes/cart.routes.js";
 import orderRouter from "./routes/order.routes.js";
+import contactRouter from "./routes/contact.route.js";
 
 dotenv.config();
 
@@ -23,7 +24,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // CORS Setup — dynamically reads allowed origins from .env
-const allowedOrigins = process.env.CORS_ORIGINS?.split(",").map((origin) => origin.trim());
+const allowedOrigins = process.env.CORS_ORIGINS?.split(",").map((origin) => origin.trim()) || [];
 
 app.use(
   cors({
@@ -31,7 +32,6 @@ app.use(
       // Allow requests from known origins or no-origin (like Postman)
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) return callback(null, true);
-      console.warn(`❌ Blocked by CORS: ${origin}`);
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
@@ -44,6 +44,7 @@ app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
+app.use("/api/contact", contactRouter);
 
 //  Health Check Route (optional but helpful in production)
 app.get("/", (req, res) => {
@@ -52,5 +53,5 @@ app.get("/", (req, res) => {
 
 //  Start Server
 app.listen(port, () => {
-  console.log(`🚀 Server started on port ${port} (${process.env.NODE_ENV})`);
+  console.log(`🚀 Server started on port ${port} (${process.env.NODE_ENVIRONMENT || 'development'})`);
 });

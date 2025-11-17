@@ -18,7 +18,6 @@ function Nav() {
 
             let result=await axios.post(serverUrl+"/api/auth/logout",{}, {withCredentials:true})
 
-            console.log("Admin logged out successfully.")
 
             setAdminData(null)
 
@@ -26,7 +25,7 @@ function Nav() {
 
         }catch(error){
 
-      console.log("Admin logOut error ❌", error.response?.data || error.message)
+     
     }           
 
         }

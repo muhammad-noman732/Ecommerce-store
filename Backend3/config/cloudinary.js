@@ -27,7 +27,7 @@ const uploadOnClodinary=async(filepath)=>{
 
 
     }catch(error){
-       console.log("cloudinary error" ,error)
+       // Cloudinary error
     }
 // Prevent unlink error if file doesn't exis
     if(fs.existsSync(filepath)){

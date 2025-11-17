@@ -26,13 +26,11 @@ function AI() {
     const recognition=new speechRecognition()
     
     if(!recognition){
-       console.log("Not Supported")
+       // Speech recognition not supported
     }
 
     recognition.onresult=(e)=>{
          const transcript=e.results[0][0].transcript.trim();
-
-         console.log(transcript)
         
        if(transcript.toLowerCase().includes('search') && transcript.toLowerCase().includes('open') &&!showSearch){
         speak("opening search")
