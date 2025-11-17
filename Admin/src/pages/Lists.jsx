@@ -37,6 +37,8 @@ function Lists() {
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
   const [showEditModal, setShowEditModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [vehicleToDelete, setVehicleToDelete] = useState(null)
   const [selectedVehicle, setSelectedVehicle] = useState(null)
   const [existingImages, setExistingImages] = useState([])
   const [newImages, setNewImages] = useState([])
@@ -105,15 +107,23 @@ function Lists() {
     fetchList(1, false)
   }, [])
 
-  const removeList = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this vehicle?')) return
+  const openDeleteModal = (id) => {
+    setVehicleToDelete(id)
+    setShowDeleteModal(true)
+  }
+
+  const removeList = async () => {
+    if (!vehicleToDelete) return
     try {
-      await axios.delete(serverUrl + `/api/product/remove/${id}`, { withCredentials: true })
+      await axios.delete(serverUrl + `/api/product/remove/${vehicleToDelete}`, { withCredentials: true })
+      setShowDeleteModal(false)
+      setVehicleToDelete(null)
       // Reload from page 1
       setPage(1)
       fetchList(1, false)
     } catch (error) {
-     
+      setShowDeleteModal(false)
+      setVehicleToDelete(null)
     }
   }
 
@@ -293,7 +303,7 @@ function Lists() {
                       <MdModeEditOutline className='w-5 h-5' />
                     </button>
                     <button
-                      onClick={() => removeList(item._id)}
+                      onClick={() => openDeleteModal(item._id)}
                       className='p-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all hover:shadow-lg hover:scale-105'
                       title='Delete'
                     >
@@ -539,6 +549,35 @@ function Lists() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className='fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4'>
+          <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 animate-fade-in-up'>
+            <h3 className='text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4'>Confirm Delete</h3>
+            <p className='text-gray-600 dark:text-gray-400 mb-6'>
+              Are you sure you want to delete this vehicle? This action cannot be undone.
+            </p>
+            <div className='flex gap-4'>
+              <button
+                onClick={removeList}
+                className='flex-1 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors'
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false)
+                  setVehicleToDelete(null)
+                }}
+                className='flex-1 px-6 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-semibold transition-colors'
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}

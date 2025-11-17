@@ -4,7 +4,7 @@ import  {upload}  from "../middleware/multer.js"
 import adminAuth from "../middleware/adminAuth.js"
 const productRouter=express.Router()
 
-productRouter.post("/addproduct",upload.fields([
+productRouter.post("/addproduct",adminAuth,upload.fields([
 
     {name:"image1" , maxCount:1},
     {name:"image2" , maxCount:1},
@@ -17,7 +17,7 @@ productRouter.get("/list",listProduct)
 
 productRouter.delete("/remove/:id",adminAuth,removeProduct)
 
-productRouter.put("/update/:id",upload.fields([
+productRouter.put("/update/:id",adminAuth,upload.fields([
 
     {name:"image1" , maxCount:1},
     {name:"image2" , maxCount:1},

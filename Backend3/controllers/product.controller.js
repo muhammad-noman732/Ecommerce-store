@@ -8,15 +8,48 @@ export const addProduct=async(req,res)=>{
     const { title, brand, model, year, mileage, fuelType, transmission, engineSize,
       bodyType, color, price, location, condition, description, stockNumber, status } = req.body
 
+    // Validate required fields
+    if (!title || !brand || !model || !price) {
+        return res.status(400).json({message: 'Missing required fields: title, brand, model, and price are required'})
+    }
+
     const images = []
-    if (req.files) {
-      for (const key in req.files) {
+    
+    // Debug: Check if files were received
+    if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).json({message: 'No files received. Please upload at least one image.'})
+    }
+
+    // Process each uploaded file
+    for (const key in req.files) {
         const file = req.files[key]?.[0]
         if (file?.path) {
-          const uploaded = await uploadOnClodinary(file.path)
-          if (uploaded) images.push(uploaded)
+          try {
+            const uploaded = await uploadOnClodinary(file.path)
+            if (uploaded) {
+                images.push(uploaded)
+            } else {
+                // Upload returned null - Cloudinary upload failed
+                throw new Error(`Failed to upload ${key} to Cloudinary`)
+            }
+          } catch (uploadError) {
+            // If Cloudinary config is missing, throw immediately
+            if (uploadError.message?.includes('Cloudinary configuration is missing')) {
+                return res.status(500).json({
+                    message: uploadError.message
+                })
+            }
+            // For other errors, continue with other images but track the error
+            // Don't fail entire request if one image fails
+          }
         }
-      }
+    }
+
+    // Validate at least one image was uploaded successfully
+    if (images.length === 0) {
+        return res.status(400).json({
+            message: 'Failed to upload images. Please check Cloudinary configuration (CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET) and try again.'
+        })
     }
 
     const productData = {
@@ -45,9 +78,10 @@ export const addProduct=async(req,res)=>{
 
 
     }catch(error){
-
-         console.log("Add product error") 
-         return res.status(500).json({message:`Product adding error  ${error}`})
+         return res.status(500).json({
+             message: `Product adding error: ${error.message || error}`,
+             error: process.env.NODE_ENVIRONMENT === 'development' ? error.stack : undefined
+         })
     }
 
 }
