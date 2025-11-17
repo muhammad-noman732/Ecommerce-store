@@ -5,9 +5,10 @@ export const authDataContext = createContext()
 function AuthContext({children}) {
 
 
+  // Read API base URL from environment variables (Vite requires VITE_ prefix)
   const envServerUrl = (import.meta?.env?.VITE_API_BASE_URL || '').trim()
-  const fallbackServerUrl = 'http://localhost:7500'
-  const normalizedServerUrl = (envServerUrl || fallbackServerUrl).replace(/\/+$/, '')
+  // Normalize: remove trailing slashes
+  const normalizedServerUrl = envServerUrl.replace(/\/+$/, '')
 
     const value = useMemo(() => ({
         serverUrl: normalizedServerUrl
