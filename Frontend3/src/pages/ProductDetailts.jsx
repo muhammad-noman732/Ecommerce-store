@@ -36,7 +36,7 @@ function ProductDetailts() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-400">Loading vehicle details...</p>
         </div>
       </div>
@@ -88,11 +88,11 @@ function ProductDetailts() {
       <div className="container mx-auto px-6 py-8">
         {/* Breadcrumb */}
         <div className="mb-6 text-sm text-gray-600 dark:text-gray-400">
-          <button onClick={() => navigate('/')} className="hover:text-purple-600 dark:hover:text-purple-400">
+          <button onClick={() => navigate('/')} className="hover:text-red-600 dark:hover:text-red-400">
             Home
           </button>
           {' / '}
-          <button onClick={() => navigate('/product')} className="hover:text-purple-600 dark:hover:text-purple-400">
+          <button onClick={() => navigate('/product')} className="hover:text-red-600 dark:hover:text-red-400">
             Inventory
           </button>
           {' / '}
@@ -131,11 +131,10 @@ function ProductDetailts() {
                   <button
                     key={idx}
                     onClick={() => setSelectedImageIndex(idx)}
-                    className={`relative overflow-hidden rounded-lg border-2 transition-all ${
-                      selectedImageIndex === idx
-                        ? 'border-purple-500 ring-2 ring-purple-200 dark:ring-purple-800'
-                        : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600'
-                    }`}
+                    className={`relative overflow-hidden rounded-lg border-2 transition-all ${selectedImageIndex === idx
+                        ? 'border-red-500 ring-2 ring-red-200 dark:ring-red-800'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-600'
+                      }`}
                   >
                     <img
                       src={img}
@@ -159,7 +158,7 @@ function ProductDetailts() {
               </h1>
               <p className="text-2xl text-gray-600 dark:text-gray-400 mb-4">{productData.year}</p>
               <div className="flex items-center gap-4 mb-6">
-                <span className="text-4xl font-bold text-purple-600 dark:text-purple-400">
+                <span className="text-4xl font-bold text-red-600 dark:text-red-400">
                   {currency}{productData.price?.toLocaleString() || 'N/A'}
                 </span>
                 {productData.condition && (

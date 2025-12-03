@@ -23,7 +23,7 @@ function Home() {
         }
     }, [products])
 
-  return (
+    return (
         <div className="min-h-screen bg-white dark:bg-gray-900 pt-20">
             {/* Hero Section */}
             <section className="pt-12 pb-20 gradient-hero">
@@ -105,7 +105,7 @@ function Home() {
                     {featuredVehicles.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {featuredVehicles.map((car, index) => (
-                                <CarCard 
+                                <CarCard
                                     key={car._id || index}
                                     {...car}
                                     id={car._id}
@@ -159,7 +159,7 @@ function Home() {
                         Browse our extensive inventory of premium Japanese imports and UK-manufactured vehicles
                     </p>
                     <Link to="/product">
-                        <button className="bg-white text-purple-600 font-semibold text-lg px-8 py-6 rounded-lg hover:bg-gray-100 transition-colors">
+                        <button className="bg-white text-red-600 font-semibold text-lg px-8 py-6 rounded-lg hover:bg-gray-100 transition-colors">
                             Explore Inventory
                         </button>
                     </Link>
@@ -233,8 +233,8 @@ function Home() {
          <OurPolicy/> 
          <NewLetterBox/>  
             */}
-    </div>
-  )
+        </div>
+    )
 }
 
 export default Home

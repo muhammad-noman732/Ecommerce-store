@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import Logo from "/vcart logo.png"
+import Logo from "/logo.jpeg"
 import { useNavigate } from 'react-router-dom'
 import { BsEye } from "react-icons/bs";
 import { TbEyeClosed } from "react-icons/tb";
@@ -46,7 +46,7 @@ function Registeration() {
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex flex-col items-center justify-center p-6 relative overflow-hidden'>
+    <div className='min-h-screen bg-gradient-to-br from-gray-900 via-red-900 to-gray-900 flex flex-col items-center justify-center p-6 relative overflow-hidden'>
       {/* Background decoration */}
       <div className='absolute inset-0 bg-[url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.1"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")] opacity-20'></div>
 
@@ -72,7 +72,7 @@ function Registeration() {
                 type='text'
                 {...register('name')}
                 placeholder='Full Name'
-                className='w-full h-12 bg-white/10 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 font-medium transition-all'
+                className='w-full h-12 bg-white/10 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 outline-none rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 font-medium transition-all'
               />
               {errors.name && (
                 <span className='block mt-2 text-sm text-red-400'>{errors.name.message}</span>
@@ -85,7 +85,7 @@ function Registeration() {
                 type='email'
                 {...register('email')}
                 placeholder='Email'
-                className='w-full h-12 bg-white/10 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 font-medium transition-all'
+                className='w-full h-12 bg-white/10 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 outline-none rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 font-medium transition-all'
               />
               {errors.email && (
                 <span className='block mt-2 text-sm text-red-400'>{errors.email.message}</span>
@@ -99,7 +99,7 @@ function Registeration() {
                   type={showPassword ? 'text' : 'password'}
                   {...register('password')}
                   placeholder='Password'
-                  className='w-full h-12 bg-white/10 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 pr-12 font-medium transition-all'
+                  className='w-full h-12 bg-white/10 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 outline-none rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 pr-12 font-medium transition-all'
                 />
                 <button
                   type='button'
@@ -136,7 +136,7 @@ function Registeration() {
               <button
                 type='button'
                 onClick={() => navigate("/login")}
-                className='text-purple-400 hover:text-purple-300 font-semibold transition-colors'
+                className='text-red-400 hover:text-red-300 font-semibold transition-colors'
               >
                 Login
               </button>

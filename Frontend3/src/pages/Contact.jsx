@@ -106,8 +106,10 @@ function Contact() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Location</h3>
-                    <p className="text-gray-600 dark:text-gray-400">United Kingdom</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">Serving customers nationwide</p>
+                    <p className="text-gray-600 dark:text-gray-400">151-157 Huddersfield Road</p>
+                    <p className="text-gray-600 dark:text-gray-400">Oldham, Greater Manchester</p>
+                    <p className="text-gray-600 dark:text-gray-400">OL1 3PA</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">Visit us at our showroom</p>
                   </div>
                 </div>
               </div>
@@ -291,7 +293,8 @@ function Contact() {
               <ul className="space-y-2 text-gray-400">
                 <li>Email: info@imkautos.co.uk</li>
                 <li>Phone: 07851 386 785</li>
-                <li>Location: London, UK</li>
+                <li>151-157 Huddersfield Road</li>
+                <li>Oldham, Greater Manchester OL1 3PA</li>
               </ul>
             </div>
           </div>

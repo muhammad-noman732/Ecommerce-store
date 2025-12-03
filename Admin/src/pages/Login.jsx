@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import Logo from "/vcart logo.png"
+import Logo from "/logo.jpeg"
 import { useNavigate } from 'react-router-dom'
 import { BsEye } from "react-icons/bs";
 import { TbEyeClosed } from "react-icons/tb";

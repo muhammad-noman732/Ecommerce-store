@@ -45,7 +45,8 @@ function Footer() {
             <ul className="space-y-2 text-gray-400">
               <li>Email: info@imkautos.co.uk</li>
               <li>Phone: 07851 386 785</li>
-              <li>Location: London, UK</li>
+              <li>151-157 Huddersfield Road</li>
+              <li>Oldham, Greater Manchester OL1 3PA</li>
             </ul>
           </div>
         </div>

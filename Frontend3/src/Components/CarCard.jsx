@@ -2,8 +2,8 @@ import React, { useContext } from 'react'
 import { shopDataContext } from '../Context/ShopContext'
 import { useNavigate } from 'react-router-dom'
 
-function CarCard({image, images, brand, model, year, price, mileage, fuel, fuelType, transmission, status, condition, id, _id}) {
-    const {currency} = useContext(shopDataContext)
+function CarCard({ image, images, brand, model, year, price, mileage, fuel, fuelType, transmission, status, condition, id, _id }) {
+    const { currency } = useContext(shopDataContext)
     const navigate = useNavigate()
 
     // Use images array if available, otherwise single image
@@ -41,7 +41,7 @@ function CarCard({image, images, brand, model, year, price, mileage, fuel, fuelT
                         </span>
                     )}
                     {condition && (
-                        <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+                        <span className="bg-red-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
                             {condition}
                         </span>
                     )}
@@ -67,10 +67,10 @@ function CarCard({image, images, brand, model, year, price, mileage, fuel, fuelT
                     </div>
                     <div>
                         <p className="text-gray-500 dark:text-gray-400">Price</p>
-                        <p className="font-bold text-purple-600 dark:text-purple-400 text-lg">{displayPrice}</p>
+                        <p className="font-bold text-red-600 dark:text-red-400 text-lg">{displayPrice}</p>
                     </div>
                 </div>
-                <button 
+                <button
                     className="w-full gradient-primary text-white font-semibold py-3 rounded-lg hover:opacity-90 transition-opacity"
                     onClick={() => navigate(`/productdetail/${id || _id}`)}
                 >
