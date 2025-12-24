@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { FaShieldAlt, FaAward, FaHeart, FaCheckCircle, FaUserCheck, FaChartLine, FaHandshake, FaTools } from 'react-icons/fa'
+import { FaShieldAlt, FaAward, FaHeart, FaCheckCircle, FaCog, FaUsers, FaLightbulb, FaHandshake } from 'react-icons/fa'
 import about from '../images/aboutUs.png'
 import about2 from '../images/aboutUs2.png'
 import Footer from './Footer'
@@ -9,93 +9,262 @@ function AboutCars() {
   return (
     <>
       {/* Hero Section */}
-      <section className="w-full py-16 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-900 dark:to-gray-800">
+      <section className="w-full py-16 bg-gradient-to-br from-red-50 to-pink-50 dark:from-gray-900 dark:to-gray-800">
         <div className="mx-auto max-w-6xl px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-            About IMK Autos (UK) Ltd
+            About IMK AUTOS (UK) LTD
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Your trusted partner for premium Japanese imports and UK-manufactured vehicles
+            Your trusted partner for taxi rentals, automotive spare parts, and cargo services
           </p>
         </div>
       </section>
 
-      {/* Main Content Section */}
-      <section className="w-full py-12 md:py-16 bg-white dark:bg-gray-50">
+      {/* Who We Are Section */}
+      <section className="w-full py-12 md:py-16 bg-white dark:bg-gray-900">
         <div className="mx-auto max-w-6xl px-4">
-          {/* Block 1 */}
           <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-10">
             <div className="order-2 lg:order-1 text-center lg:text-left">
-              <p className="text-[#7e22ce] text-3xl font-bold mb-2">1</p>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-[#101010] dark:text-gray-900 mb-4">
-                IMK Autos (UK) Ltd — where your vehicle journey begins
+              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-gray-100 mb-4">
+                Who We Are
               </h2>
-              <p className="text-[15px] md:text-[16px] text-[#545454] dark:text-gray-700 leading-7 text-justify mb-4">
-                At IMK Autos (UK) Ltd, we bring quality, reliability, and choice to the forefront of vehicle sales. Based in the UK, our company specialises in sourcing and supplying a wide range of cars and vans to suit every need—from everyday drivers to commercial fleets.
+              <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 leading-7 text-justify mb-6">
+                IMK AUTOS (UK) LTD is a UK-registered mobility and logistics company dedicated to providing
+                reliable taxi rentals, certified spare parts, and efficient cargo services. Our operations are built
+                on strong values, high standards, and a commitment to long-term customer satisfaction.
               </p>
-              <p className="text-[15px] md:text-[16px] text-[#545454] dark:text-gray-700 leading-7 text-justify mb-4 font-semibold">
-                We proudly offer:
+              <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 leading-7 text-justify">
+                From professional drivers requiring flexible vehicle rentals to businesses needing dependable cargo
+                solutions, we serve as your comprehensive partner in mobility and logistics across the UK.
               </p>
-              <ul className="list-disc pl-6 mb-4 text-[#545454] dark:text-gray-700 space-y-3 text-justify">
-                <li>
-                  <strong>Japanese Imported Vehicles:</strong> Renowned for their engineering excellence, fuel efficiency, and advanced features, our Japanese imports include popular models from trusted brands. Each vehicle is carefully selected and inspected to meet UK standards.
-                </li>
-                <li>
-                  <strong>UK-Manufactured Cars and Vans:</strong> We also stock a diverse selection of British-built vehicles, offering robust performance, practicality, and value for money. Whether you're looking for a reliable family car or a durable work van, we've got you covered.
-                </li>
-              </ul>
               <div className="mt-6">
-                <Link to="/product" className="inline-block bg-[#101010] text-white px-6 py-3 rounded-lg hover:bg-[#2a2a2a] transition-colors">
-                  Explore Now
+                <Link to="/contact" className="inline-block gradient-primary text-white px-6 py-3 rounded-lg hover:opacity-90 transition-opacity">
+                  Get In Touch
                 </Link>
               </div>
             </div>
             <div className="order-1 lg:order-2 flex justify-center lg:justify-start">
-              <img src={about} alt="About IMK Autos" className="w-full max-w-xl rounded-lg shadow-lg" />
+              <img src={about} alt="About IMK AUTOS" className="w-full max-w-xl rounded-lg shadow-lg" />
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Block 2 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-10 mt-16">
-            <div className="flex justify-center lg:justify-center px-0 lg:px-8">
-              <img src={about2} alt="We understand your needs" className="w-full max-w-xl rounded-lg shadow-lg" />
+      {/* Mission & Vision Section */}
+      <section className="py-16 bg-gray-50 dark:bg-gray-800/50">
+        <div className="mx-auto max-w-6xl px-4">
+          <div className="grid md:grid-cols-2 gap-10">
+            {/* Mission */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center mb-6">
+                <FaCheckCircle className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                Our Mission
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                To deliver reliable, efficient, and high-quality mobility and logistics solutions by providing
+                trusted taxi rentals, genuine spare parts, and secure cargo services across the UK—ensuring
+                customer satisfaction, operational excellence, and long-term value.
+              </p>
+            </div>
+
+            {/* Vision */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center mb-6">
+                <FaLightbulb className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                Our Vision
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                To become the UK's most trusted and customer-focused provider of mobility, automotive parts,
+                and cargo solutions—setting new standards for reliability, quality, and service excellence.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Core Values Section */}
+      <section className="py-16 bg-white dark:bg-gray-900">
+        <div className="mx-auto max-w-6xl px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+              Our Core Values
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              The principles that guide everything we do at IMK AUTOS (UK) LTD
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Reliability */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center mb-4">
+                <FaShieldAlt className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+                Reliability
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Dependable service you can count on, every time.
+              </p>
+            </div>
+
+            {/* Integrity */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center mb-4">
+                <FaHandshake className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+                Integrity
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Honest, transparent, and ethical in all we do.
+              </p>
+            </div>
+
+            {/* Customer Focus */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center mb-4">
+                <FaHeart className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+                Customer Focus
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Your satisfaction is our top priority.
+              </p>
+            </div>
+
+            {/* Quality */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center mb-4">
+                <FaAward className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+                Quality
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Excellence in every product and service.
+              </p>
+            </div>
+
+            {/* Innovation */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center mb-4">
+                <FaLightbulb className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+                Innovation
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Continuously improving our services.
+              </p>
+            </div>
+
+            {/* Professionalism */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center mb-4">
+                <FaUsers className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+                Professionalism
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Expert service with a professional approach.
+              </p>
+            </div>
+
+            {/* Safety */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center mb-4">
+                <FaShieldAlt className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+                Safety
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Your safety is our constant concern.
+              </p>
+            </div>
+
+            {/* Commitment */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center mb-4">
+                <FaCheckCircle className="w-6 h-6 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">
+                Commitment
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Dedicated to your long-term success.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Services Section */}
+      <section className="py-16 bg-gray-50 dark:bg-gray-800/50">
+        <div className="mx-auto max-w-6xl px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 items-center gap-10">
+            <div className="flex justify-center lg:justify-center">
+              <img src={about2} alt="Our Services" className="w-full max-w-xl rounded-lg shadow-lg" />
             </div>
             <div className="text-center lg:text-left">
-              <p className="text-[#7e22ce] text-3xl font-bold mb-2">2</p>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-[#101010] dark:text-gray-900 mb-4">
-                The best car buying partner — we understand your needs
+              <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-gray-100 mb-4">
+                What We Offer
               </h2>
-              <p className="text-[15px] md:text-[16px] text-[#545454] dark:text-gray-700 leading-7 text-justify mb-4">
-                We're more than just a website; we're your trusted partner in finding the perfect vehicle. With a passion for automobiles and a dedication to your satisfaction, we've curated a vast selection of cars to suit every need and budget. Our mission is to simplify the car-buying process, providing you with the tools and resources you need to make informed decisions. Our team of experts is here to guide you, offering valuable insights and advice along the way.
+              <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 leading-7 text-justify mb-6">
+                IMK AUTOS (UK) LTD provides three core services designed to support drivers, businesses, and
+                communities across the United Kingdom.
               </p>
-              
-              <p className="text-[15px] md:text-[16px] text-[#545454] dark:text-gray-700 leading-7 text-justify mb-4 font-semibold">
-                Why Choose IMK Autos?
-              </p>
-              <ul className="list-disc pl-6 mb-4 text-[#545454] dark:text-gray-700 space-y-3 text-justify">
-                <li>
-                  <strong>Expertise in Imports & Compliance:</strong> We handle all import documentation, registration, and compliance checks, ensuring a smooth and transparent buying experience.
+
+              <ul className="space-y-4 mb-6">
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 mt-1">
+                    <FaCheckCircle className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Taxi Rentals for Drivers</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Flexible, fully-maintained vehicles for professional drivers across major UK cities.
+                    </p>
+                  </div>
                 </li>
-                <li>
-                  <strong>Quality Assurance:</strong> Every vehicle undergoes thorough inspection and servicing before sale.
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 mt-1">
+                    <FaCog className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Automotive Spare Parts</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Quality-tested, reliable parts for a wide range of vehicles.
+                    </p>
+                  </div>
                 </li>
-                <li>
-                  <strong>Customer-Focused Service:</strong> Our team is committed to helping you find the right vehicle at the right price, with honest advice and after-sales support.
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-red-600 flex items-center justify-center flex-shrink-0 mt-1">
+                    <FaCheckCircle className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Cargo & Transport Services</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Secure, efficient cargo delivery for businesses of all sizes.
+                    </p>
+                  </div>
                 </li>
               </ul>
-              
-              <p className="text-[15px] md:text-[16px] text-[#545454] dark:text-gray-700 leading-7 text-justify mb-4">
-                Whether you're upgrading your personal car or expanding your business fleet, IMK Autos (UK) Ltd is your trusted partner for dependable vehicles and professional service.
-              </p>
-              
+
               <div className="mt-6">
-                <Link to="/product" className="inline-block bg-[#7e22ce] text-white px-6 py-3 rounded-lg hover:bg-[#6b1db2] transition-colors">
-                  Shop Now
+                <Link to="/product" className="inline-block gradient-primary text-white px-6 py-3 rounded-lg hover:opacity-90 transition-opacity">
+                  Explore Our Services
                 </Link>
               </div>
-              <div className="mt-6 text-[#545454] dark:text-gray-700">
-                <p className="text-lg font-semibold">
-                  <strong>Phone:</strong> 07851 386 785
+              <div className="mt-6">
+                <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                  <strong>Phone:</strong> <a href="tel:07851386785" className="text-red-600 hover:text-red-700">07851 386 785</a>
                 </p>
               </div>
             </div>
@@ -103,204 +272,33 @@ function AboutCars() {
         </div>
       </section>
 
-      {/* Our Values Section */}
-      <section className="py-16 bg-gray-50 dark:bg-gray-800/50">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-              Our Core Values
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              The principles that guide everything we do at IMK Autos
-            </p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow">
-              <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center mb-6 mx-auto md:mx-0">
-                <FaShieldAlt className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3 text-center md:text-left">
-                Trust & Integrity
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-center md:text-left">
-                We build lasting relationships based on honesty, transparency, and reliable service. Every vehicle is presented with complete transparency about its history and condition.
-              </p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow">
-              <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center mb-6 mx-auto md:mx-0">
-                <FaAward className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3 text-center md:text-left">
-                Quality Excellence
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-center md:text-left">
-                Our rigorous quality standards ensure that every vehicle meets or exceeds UK regulations. We're committed to delivering vehicles that exceed expectations.
-              </p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow">
-              <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center mb-6 mx-auto md:mx-0">
-                <FaHeart className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3 text-center md:text-left">
-                Customer First
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-center md:text-left">
-                Your satisfaction is our priority. From initial inquiry to after-sales support, we're dedicated to providing exceptional service at every step of your journey.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Our Process Section */}
-      <section className="py-16 bg-white dark:bg-gray-900">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-              How We Work
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              A streamlined process designed to make your vehicle purchase simple and stress-free
-            </p>
-          </div>
-          <div className="grid md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-4 mx-auto">
-                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">1</span>
-              </div>
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Browse & Select</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Explore our extensive inventory of premium vehicles. Use our filters to find exactly what you're looking for.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-4 mx-auto">
-                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">2</span>
-              </div>
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Inspection & Verification</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Every vehicle undergoes comprehensive checks. We verify history, compliance, and condition before listing.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-4 mx-auto">
-                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">3</span>
-              </div>
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Expert Consultation</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Our team provides personalized advice, answers your questions, and helps you make an informed decision.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-4 mx-auto">
-                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">4</span>
-              </div>
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Complete Purchase</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                We handle all paperwork, registration, and compliance. Drive away with confidence and ongoing support.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section className="py-16 bg-gray-50 dark:bg-gray-800/50">
-        <div className="mx-auto max-w-6xl px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-              Comprehensive Services
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Everything you need for a complete vehicle buying experience
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-              <FaCheckCircle className="w-8 h-8 text-purple-600 dark:text-purple-400 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                Import & Compliance
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Full documentation handling, UK registration, and compliance verification for imported vehicles.
-              </p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-              <FaTools className="w-8 h-8 text-purple-600 dark:text-purple-400 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                Pre-Sale Inspection
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Comprehensive multi-point inspection and servicing to ensure vehicle reliability and safety.
-              </p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-              <FaUserCheck className="w-8 h-8 text-purple-600 dark:text-purple-400 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                Expert Consultation
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Personalized guidance from our automotive experts to help you find the perfect vehicle for your needs.
-              </p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-              <FaHandshake className="w-8 h-8 text-purple-600 dark:text-purple-400 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                After-Sales Support
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Ongoing assistance and support after your purchase to ensure continued satisfaction.
-              </p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-              <FaChartLine className="w-8 h-8 text-purple-600 dark:text-purple-400 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                Fleet Solutions
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Specialized services for businesses looking to expand or upgrade their commercial vehicle fleet.
-              </p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-              <FaShieldAlt className="w-8 h-8 text-purple-600 dark:text-purple-400 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                Peace of Mind
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Transparent pricing, detailed vehicle history, and complete documentation for your confidence.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Commitment Section */}
-      <section className="py-16 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+      {/* CTA Section */}
+      <section className="py-16 gradient-primary text-white">
         <div className="mx-auto max-w-6xl px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Our Commitment to You
+            Ready to Work With Us?
           </h2>
           <p className="text-lg text-white/90 max-w-3xl mx-auto mb-8">
-            At IMK Autos (UK) Ltd, we're committed to providing exceptional service, quality vehicles, and complete transparency. 
-            Whether you're purchasing your first car or adding to your collection, we're here to make the process seamless and enjoyable.
+            Whether you need a taxi rental, quality spare parts, or reliable cargo services,
+            IMK AUTOS (UK) LTD is here to help. Contact us today to discuss your requirements.
           </p>
           <div className="flex flex-wrap justify-center gap-6 mb-8">
             <div className="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-4 border border-white/20">
               <p className="text-2xl font-bold mb-1">100%</p>
-              <p className="text-sm">Compliance Verified</p>
+              <p className="text-sm">Quality Assured</p>
+            </div>
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-4 border border-white/20">
+              <p className="text-2xl font-bold mb-1">UK-Wide</p>
+              <p className="text-sm">Service Coverage</p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-4 border border-white/20">
               <p className="text-2xl font-bold mb-1">24/7</p>
-              <p className="text-sm">Customer Support</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-4 border border-white/20">
-              <p className="text-2xl font-bold mb-1">100%</p>
-              <p className="text-sm">Quality Assured</p>
+              <p className="text-sm">Support Available</p>
             </div>
           </div>
           <Link to="/contact">
-            <button className="bg-white text-purple-600 font-semibold px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors">
-              Get In Touch
+            <button className="bg-white text-red-600 font-semibold px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors">
+              Contact Us Today
             </button>
           </Link>
         </div>

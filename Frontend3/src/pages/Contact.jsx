@@ -9,8 +9,8 @@ import { authDataContext } from '../Context/AuthContext'
 const contactSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email address'),
-  phone: z.string().optional(),
-  subject: z.string().min(5, 'Subject must be at least 5 characters'),
+  phone: z.string().min(10, 'Phone number is required').optional(),
+  serviceRequired: z.string().min(1, 'Please select a service'),
   message: z.string().min(10, 'Message must be at least 10 characters')
 })
 
@@ -18,9 +18,9 @@ function Contact() {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
-  
+
   const { serverUrl } = useContext(authDataContext)
-  
+
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     resolver: zodResolver(contactSchema)
   })
@@ -28,12 +28,12 @@ function Contact() {
   const onSubmit = async (data) => {
     setSubmitting(true)
     setError('')
-    
+
     try {
       const result = await axios.post(serverUrl + '/api/contact/submit', data, {
         withCredentials: true
       })
-      
+
       setSubmitted(true)
       reset()
       setTimeout(() => setSubmitted(false), 5000)
@@ -54,7 +54,7 @@ function Contact() {
             Get In Touch
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Have a question or want to learn more about our vehicles? We'd love to hear from you.
+            Have questions or want to book a service? We are here to help.
           </p>
         </div>
       </section>
@@ -69,9 +69,10 @@ function Contact() {
                 <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">
                   Contact Information
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400 mb-8">
-                  Reach out to us through any of the following channels. Our team is ready to assist you with your vehicle needs.
-                </p>
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">IMK AUTOS (UK) LTD</h3>
+                  <p className="text-gray-600 dark:text-gray-400">United Kingdom</p>
+                </div>
               </div>
 
               <div className="space-y-6">
@@ -82,8 +83,8 @@ function Contact() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Phone</h3>
-                    <p className="text-gray-600 dark:text-gray-400">07851 386 785</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">Mon - Sat, 9:00 AM - 6:00 PM</p>
+                    <a href="tel:07851386785" className="text-red-600 dark:text-red-400 hover:underline">07851 386 785</a>
+                    <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">Mon - Sat, 9:00 AM - 7:00 PM</p>
                   </div>
                 </div>
 
@@ -94,7 +95,7 @@ function Contact() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Email</h3>
-                    <p className="text-gray-600 dark:text-gray-400">info@imkautos.co.uk</p>
+                    <a href="mailto:info@imkautos.co.uk" className="text-red-600 dark:text-red-400 hover:underline">info@imkautos.co.uk</a>
                     <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">We'll respond within 24 hours</p>
                   </div>
                 </div>
@@ -105,24 +106,24 @@ function Contact() {
                     <FiMapPin className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Location</h3>
-                    <p className="text-gray-600 dark:text-gray-400">151-157 Huddersfield Road</p>
-                    <p className="text-gray-600 dark:text-gray-400">Oldham, Greater Manchester</p>
-                    <p className="text-gray-600 dark:text-gray-400">OL1 3PA</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">Visit us at our showroom</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Business Hours</h3>
+                    <div className="text-gray-600 dark:text-gray-400 space-y-1">
+                      <p>Monday – Saturday: 9:00 AM – 7:00 PM</p>
+                      <p className="font-semibold">Sunday: Closed</p>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Why Choose Section */}
-              <div className="mt-12 p-6 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border border-purple-200 dark:border-purple-800">
+              <div className="mt-12 p-6 bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-xl border border-red-200 dark:border-red-800">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
-                  Why Choose IMK Autos?
+                  Why Choose IMK AUTOS (UK) LTD?
                 </h3>
                 <ul className="space-y-2 text-gray-700 dark:text-gray-300 text-sm">
-                  <li>✓ Expertise in Imports & Compliance</li>
-                  <li>✓ Quality Assurance & Inspection</li>
-                  <li>✓ Customer-Focused Service</li>
+                  <li>✓ Reliable Taxi Rentals</li>
+                  <li>✓ Quality Spare Parts</li>
+                  <li>✓ Secure Cargo Services</li>
                 </ul>
               </div>
             </div>
@@ -196,19 +197,23 @@ function Contact() {
                     />
                   </div>
 
-                  {/* Subject */}
+                  {/* Service Required */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                      Subject *
+                      Service Required *
                     </label>
-                    <input
-                      {...register('subject')}
-                      type="text"
-                      placeholder="Inquiry about vehicle availability"
-                      className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                    />
-                    {errors.subject && (
-                      <p className="text-red-500 text-xs mt-1">{errors.subject.message}</p>
+                    <select
+                      {...register('serviceRequired')}
+                      className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                    >
+                      <option value="">Select a service</option>
+                      <option value="taxi-rental">Taxi Rental Services</option>
+                      <option value="spare-parts">Automotive Spare Parts</option>
+                      <option value="cargo-services">Cargo & Transport Services</option>
+                      <option value="general-inquiry">General Inquiry</option>
+                    </select>
+                    {errors.serviceRequired && (
+                      <p className="text-red-500 text-xs mt-1">{errors.serviceRequired.message}</p>
                     )}
                   </div>
 

@@ -1,19 +1,17 @@
 import { User } from "../model/user.model.js"
+import { sanitizeUser } from "../utils/userUtils.js"
 
 
 export const getCurrentUser=async(req,res)=>{
     try{
-
-   {/*This userId is coming from is Auth because of next() */}
      let user=await User.findById(req.userId)
-        //since we don't want password
         .select("-password")
 
      if(!user){
         return res.status(404).json({message:"User is not found."})
      }   
 
-        return res.status(200).json(user)
+        return res.status(200).json(sanitizeUser(user))
 
 
     }catch(error){
@@ -47,7 +45,6 @@ export const getAdmin = async(req,res)=>{
     }
 }
 
-// Get all users (Admin only)
 export const getAllUsers = async(req,res)=>{
     try{
 

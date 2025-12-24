@@ -2,17 +2,19 @@ import React, { useContext, useState } from 'react'
 import CartTotal from '../Components/CartTotal'
 import { shopDataContext } from '../Context/ShopContext'
 import { authDataContext } from '../Context/AuthContext'
+import { userDataContext } from '../Context/UserContext'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import { FaCreditCard, FaMoneyBillWave } from 'react-icons/fa'
+import { toast } from 'react-toastify'
+import { FaCreditCard } from 'react-icons/fa'
 
 function PlaceOrder() {
-  const [method, setMethod] = useState('COD')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
   const { serverUrl } = useContext(authDataContext)
-  const { cartItem, getCartAmount, delivery_fee, products, setCartItem } = useContext(shopDataContext)
+  const { cartItem, getCartAmount, products, setCartItem } = useContext(shopDataContext)
+  const { userData } = useContext(userDataContext)
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -34,6 +36,13 @@ function PlaceOrder() {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault()
+
+    if (!userData) {
+      toast.error('Please login to place an order');
+      navigate('/login');
+      return;
+    }
+
     setLoading(true)
     try {
       let orderItems = []
@@ -54,23 +63,40 @@ function PlaceOrder() {
       let orderData = {
         address: formData,
         items: orderItems,
-        amount: getCartAmount() + delivery_fee
+        amount: getCartAmount() // No delivery fee  
       }
 
-      switch (method) {
-        case 'COD':
-          const result = await axios.post(serverUrl + "/api/order/placeorder", orderData, { withCredentials: true })
-          if (result.data) {
-            setCartItem({})
-            navigate('/order')
-          }
-          break;
+      // Stripe Checkout - create session and redirect
+      const checkoutData = {
+        items: orderItems,
+        amount: orderData.amount,
+        address: formData
+      }
 
-        default:
-          break;
+      const stripeResponse = await axios.post(
+        serverUrl + "/api/payment/create-checkout-session",
+        checkoutData,
+        { withCredentials: true }
+      )
+
+      if (stripeResponse.data?.success && stripeResponse.data?.url) {
+        // Save pending order before redirect
+        const pendingOrderData = {
+          ...orderData,
+          paymentMethod: 'Stripe',
+          stripeSessionId: stripeResponse.data.sessionId
+        }
+
+        await axios.post(serverUrl + "/api/order/placeorder", pendingOrderData, { withCredentials: true })
+
+        // Redirect to Stripe Checkout
+        window.location.href = stripeResponse.data.url
+      } else {
+        throw new Error('Failed to create checkout session')
       }
     } catch (error) {
-      alert(error.response?.data?.message || 'Failed to place order. Please try again.')
+      console.error('Payment error:', error)
+      toast.error(error.response?.data?.message || 'Failed to initialize payment. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -81,7 +107,7 @@ function PlaceOrder() {
       <div className="container mx-auto px-6 py-8">
         <div className="mb-8">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-2">Checkout</h1>
-          <p className="text-gray-600 dark:text-gray-400">Complete your order by filling in the details below</p>
+          <p className="text-gray-600 dark:text-gray-400">Complete your order - Payment via Stripe</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -91,7 +117,7 @@ function PlaceOrder() {
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Delivery Information</h2>
 
               <form onSubmit={onSubmitHandler} className="space-y-6">
-                {/* First Name and Last Name */}
+                {/* Name Fields */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
@@ -100,7 +126,7 @@ function PlaceOrder() {
                     <input
                       type='text'
                       placeholder='John'
-                      className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all'
+                      className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all'
                       required
                       onChange={onChangeHandler}
                       name='firstName'
@@ -114,7 +140,7 @@ function PlaceOrder() {
                     <input
                       type='text'
                       placeholder='Doe'
-                      className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all'
+                      className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all'
                       required
                       onChange={onChangeHandler}
                       name='lastName'
@@ -126,12 +152,12 @@ function PlaceOrder() {
                 {/* Email */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                    Email *
+                    Email Address *
                   </label>
                   <input
                     type='email'
-                    placeholder='john.doe@example.com'
-                    className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all'
+                    placeholder='johndoe@example.com'
+                    className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all'
                     required
                     onChange={onChangeHandler}
                     name='email'
@@ -147,7 +173,7 @@ function PlaceOrder() {
                   <input
                     type='text'
                     placeholder='123 Main Street'
-                    className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all'
+                    className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all'
                     required
                     onChange={onChangeHandler}
                     name='street'
@@ -163,8 +189,8 @@ function PlaceOrder() {
                     </label>
                     <input
                       type='text'
-                      placeholder='New York'
-                      className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all'
+                      placeholder='London'
+                      className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all'
                       required
                       onChange={onChangeHandler}
                       name='city'
@@ -173,12 +199,12 @@ function PlaceOrder() {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                      State *
+                      State/County *
                     </label>
                     <input
                       type='text'
-                      placeholder='NY'
-                      className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all'
+                      placeholder='Greater London'
+                      className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all'
                       required
                       onChange={onChangeHandler}
                       name='state'
@@ -187,16 +213,16 @@ function PlaceOrder() {
                   </div>
                 </div>
 
-                {/* Pincode and Country */}
+                {/* Postcode and Country */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                      Zip Code *
+                      Postcode *
                     </label>
                     <input
                       type='text'
-                      placeholder='10001'
-                      className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all'
+                      placeholder='SW1A 1AA'
+                      className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all'
                       required
                       onChange={onChangeHandler}
                       name='pinCode'
@@ -209,8 +235,8 @@ function PlaceOrder() {
                     </label>
                     <input
                       type='text'
-                      placeholder='United States'
-                      className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all'
+                      placeholder='United Kingdom'
+                      className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all'
                       required
                       onChange={onChangeHandler}
                       name='country'
@@ -226,8 +252,8 @@ function PlaceOrder() {
                   </label>
                   <input
                     type='tel'
-                    placeholder='+1 (555) 123-4567'
-                    className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all'
+                    placeholder='07851 386 785'
+                    className='w-full h-12 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 px-4 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all'
                     required
                     onChange={onChangeHandler}
                     name='phone'
@@ -235,39 +261,23 @@ function PlaceOrder() {
                   />
                 </div>
 
-                {/* Payment Method */}
-                <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Payment Method</h3>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <button
-                      type='button'
-                      onClick={() => setMethod('COD')}
-                      className={`p-4 rounded-xl border-2 transition-all ${
-                        method === 'COD'
-                          ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
-                          : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 hover:border-purple-300 dark:hover:border-purple-600'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <FaMoneyBillWave className={`w-6 h-6 ${method === 'COD' ? 'text-purple-600 dark:text-purple-400' : 'text-gray-600 dark:text-gray-400'}`} />
-                        <div className="text-left">
-                          <p className={`font-semibold ${method === 'COD' ? 'text-purple-600 dark:text-purple-400' : 'text-gray-900 dark:text-gray-100'}`}>
-                            Cash on Delivery
-                          </p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">Pay when you receive</p>
-                        </div>
-                      </div>
-                    </button>
-                  </div>
-                </div>
-
                 {/* Submit Button */}
                 <button
                   type='submit'
                   disabled={loading}
-                  className='w-full gradient-primary text-white font-semibold text-lg px-8 py-4 rounded-lg hover:opacity-90 transition-all shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed'
+                  className='w-full gradient-primary text-white font-semibold text-lg px-8 py-4 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-70 shadow-lg hover:shadow-xl flex items-center justify-center gap-2'
                 >
-                  {loading ? 'Placing Order...' : 'Place Order'}
+                  {loading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <FaCreditCard className="w-5 h-5" />
+                      Proceed to Payment
+                    </>
+                  )}
                 </button>
               </form>
             </div>
@@ -275,8 +285,18 @@ function PlaceOrder() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-6 sticky top-24 animate-fade-in">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">Order Summary</h2>
               <CartTotal />
+              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <p className="text-sm text-blue-800 dark:text-blue-200 mb-2">
+                  <FaCreditCard className="inline mr-2" />
+                  <strong>Secure Payment via Stripe</strong>
+                </p>
+                <p className="text-xs text-blue-600 dark:text-blue-300">
+                  You will be redirected to Stripe's secure checkout page to enter your card details. We do not store your card information.
+                </p>
+              </div>
             </div>
           </div>
         </div>

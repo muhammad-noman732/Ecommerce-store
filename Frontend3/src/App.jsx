@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import Nav from './Components/Nav'
 import { userDataContext } from './Context/UserContext'
 import About from './pages/About'
+import Services from './pages/Services'
 import Collections from './pages/Collections'
 import Product from './pages/Product'
 import Contact from './pages/Contact'
@@ -13,6 +14,8 @@ import ProductDetailts from './pages/ProductDetailts'
 import Cart from './pages/Cart'
 import PlaceOrder from './pages/PlaceOrder'
 import Order from './pages/Order'
+import OrderSuccess from './pages/OrderSuccess'
+import OrderCancel from './pages/OrderCancel'
 import NotFound from './pages/NotFound'
 import AI from './Components/AI'
 import 'react-toastify/dist/ReactToastify.css';
@@ -20,95 +23,96 @@ import { ToastContainer } from 'react-toastify';
 
 function App() {
 
-  let {userData}=useContext(userDataContext)
+  let { userData } = useContext(userDataContext)
 
-  let location=useLocation()
+  let location = useLocation()
 
   // Note: No global redirect here to avoid loops. Admin redirect handled post-login.
 
   return (
     <div>
       {/* Auth-guarded Nav: {userData && <Nav/>} */}
-      <Nav/>
+      <Nav />
 
-         <ToastContainer />
+      <ToastContainer />
 
       <Routes>
 
-      {/* Guarded:
+        {/* Guarded:
       <Route path='/signup' element={userData ? 
         (<Navigate  to={location.state?.from || "/" } />) 
         :(<Registeration/>)} /> */}
-      <Route path='/signup' element={<Registeration/>} />
+        <Route path='/signup' element={<Registeration />} />
 
-     
-       {/* Guarded:
+
+        {/* Guarded:
        <Route path='/login' element={userData ? 
         (<Navigate  to={location.state?.from || "/" } />) 
         :(<Login/>)}/>    */}
-       <Route path='/login' element={<Login/>}/>   
-   
-     {/* Guarded:
+        <Route path='/login' element={<Login />} />
+
+        {/* Guarded:
      <Route path='/' element={userData ? <Home/> : <Navigate  to='/login' state={{from:location.pathname}}/>} />    */}
-     <Route path='/' element={<Home/>} />   
+        <Route path='/' element={<Home />} />
 
 
 
-        
-       
-       
-     {/* Guarded:
+
+
+
+        {/* Guarded:
      <Route path='/about' element={userData ? <About/> : <Navigate  to='/login' state={{from:location.pathname}}/>}
        /> */}
-     <Route path='/about' element={<About/>} />
+        <Route path='/about' element={<About />} />
 
-     
-     {/* Guarded:
+        {/* Services Page - Public */}
+        <Route path='/services' element={<Services />} />
+
+
+        {/* Guarded:
      <Route path='/collection' element={userData ? <Collections/> : <Navigate  to='/login' state={{from:location.pathname}}/>}
        /> */}
-     <Route path='/collection' element={<Collections/>} />
+        <Route path='/collection' element={<Collections />} />
 
-     
-     {/* Guarded:
+
+        {/* Guarded:
      <Route path='/product' element={userData ? <Product/> : <Navigate  to='/login' state={{from:location.pathname}}/>}
        />  */}
-     <Route path='/product' element={<Product/>} /> 
+        <Route path='/product' element={<Product />} />
 
-     
-     {/* Guarded:
+
+        {/* Guarded:
      <Route path='/contact' element={userData ? <Contact/> : <Navigate  to='/login' state={{from:location.pathname}}/>}
        />   */}
-     <Route path='/contact' element={<Contact/>} />  
+        <Route path='/contact' element={<Contact />} />
 
-     {/* Guarded:
+        {/* Guarded:
      <Route path='/productdetail/:productId' element={userData ? <ProductDetailts/> : <Navigate  to='/login' state={{from:location.pathname}}/>}
        />         */}
-     <Route path='/productdetail/:productId' element={<ProductDetailts/>} />        
+        <Route path='/productdetail/:productId' element={<ProductDetailts />} />
 
-     {/* Guarded:
+        {/* Guarded:
      <Route path='/cart' element={userData ? <Cart/> : <Navigate  to='/login' state={{from:location.pathname}}/>}
        /> */}
-     <Route path='/cart' element={<Cart/>} />
+        <Route path='/cart' element={<Cart />} />
 
-     {/* Guarded:
-     <Route path='/placeorder' element={userData ? <PlaceOrder/> : <Navigate  to='/login' state={{from:location.pathname}}/>}
-       />  */}
-     <Route path='/placeorder' element={<PlaceOrder/>} /> 
+        {/* Guarded:
+        {/* Guarded routes - require login */}
+        <Route path='/placeorder' element={userData ? <PlaceOrder /> : <Navigate to='/login' state={{ from: location.pathname }} />} />
+        <Route path='/order' element={userData ? <Order /> : <Navigate to='/login' state={{ from: location.pathname }} />} />
 
-
-     {/* Guarded:
-     <Route path='/order' element={userData ? <Order/> : <Navigate  to='/login' state={{from:location.pathname}}/>}
-       />               */}
-     <Route path='/order' element={<Order/>} />              
+        {/* Stripe Success/Cancel Pages */}
+        <Route path='/order-success' element={<OrderSuccess />} />
+        <Route path='/order-cancel' element={<OrderCancel />} />
 
 
-      <Route path='*' element={<NotFound/>}/>
+        <Route path='*' element={<NotFound />} />
 
 
-     
+
 
       </Routes>
-      <AI/>
+      <AI />
     </div>
   )
 }

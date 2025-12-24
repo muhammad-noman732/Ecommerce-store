@@ -2,7 +2,7 @@ import { User } from "../model/user.model.js"
 import validator from "validator"
 import bcrypt from "bcryptjs"
 import { genToken, genToken1 } from "../config/token.js"
-// import { TbWashDryP } from "react-icons/tb"
+import { sanitizeUser } from "../utils/userUtils.js"
 
 export const register=async(req,res)=>{
     
@@ -10,15 +10,12 @@ export const register=async(req,res)=>{
 
     const { name , email,password}=req.body
 
-    //We have installed validator to validate email
-
     const existUser = await User.findOne({email})
 
     if(existUser){
         return res.status(400).json({message:"User already exists."})
     }
 
-    //You're checking if the user's email is NOT valid.
     if(!validator.isEmail(email)){
         return res.status(400).json({message:"Enter valid Email."})   
     }
@@ -32,12 +29,11 @@ export const register=async(req,res)=>{
    const user= await User.create({
     name,
     email,
-    password:hashedPassword
+    password:hashedPassword,
+    stripeCustomerId:null
    })
 
    let token = await genToken(user._id, user.role)
-
-   {/*Now we are going to put token in cookie */}
 
    res.cookie("token", token, {
     httpOnly: true,
@@ -46,15 +42,7 @@ export const register=async(req,res)=>{
     maxAge: 7 * 24 * 60 * 60 * 1000
    })
 
- /*name → "token" → This is the name of the cookie.
-
-value → token → This is the actual JWT token that we generated for authentication.
-
-options → An object containing various settings for security and behavior.
-
- */
-
-   return res.status(201).json(user)
+   return res.status(201).json(sanitizeUser(user))
 
    }catch(error){
     
@@ -69,22 +57,11 @@ export const login=async(req,res)=>{
 
         let {email,password} = req.body
 
-
-        //	You passed an object with email key and its value
         let exitUser = await User.findOne({email})
 
         if(!exitUser){
        return res.status(400).json({message:"User does not exist."})            
         }
-
-/*
-//  If user signed up using Google, block normal login (Disabled)
-   if (exitUser.isGoogleAuth) {
-     return res.status(400).json({
-    message: "You signed up using Google. Please use Google login instead."
-    });
-  }        
-*/     
 
         const isMatch = await bcrypt.compare(password,exitUser.password)
 
@@ -93,11 +70,7 @@ export const login=async(req,res)=>{
          return res.status(400).json({message:"Incorrect Password."})            
         }
 
-
-    {/*A new token will be generated whenever user register on logs in  */}
       let token = await genToken(exitUser._id, exitUser.role)
-
-      {/*Now passing it to cookie */}
 
        res.cookie("token", token, {
         httpOnly: true,
@@ -106,17 +79,7 @@ export const login=async(req,res)=>{
         maxAge: 7 * 24 * 60 * 60 * 1000
    })
 
-   {/* Keep it in mind
-    
-    if you want to see user data then don't do this.
-
-   return res.status(201).json("User Logged in successfully.",exitUser)    
-    
-The reason is that res.json() method accepts only one argument, which should be:
-     1) A string, or
-     2)An object, or
-     30An array, etc.*/}
-   return res.status(201).json(exitUser)
+   return res.status(201).json(sanitizeUser(exitUser))
 
     }catch(error){
     
@@ -144,16 +107,6 @@ export const logOut = async(req,res)=>{
     }
 }
 
-
-
-/*
-export const googleLogin=async(req,res)=>{
-    // Disabled: Email/password only
-    return res.status(400).json({ message: "Google login is disabled." })
-}
-*/
-
-
 export const adminLogin=async(req,res)=>{
     try{
         const { email, password } = req.body
@@ -162,13 +115,6 @@ export const adminLogin=async(req,res)=>{
         if(!user){
             return res.status(400).json({message:"User does not exist."})
         }
-
-        /*
-        // Block admin google accounts (Disabled)
-        if (user.isGoogleAuth) {
-            return res.status(400).json({ message: "You signed up using Google. Please use Google login instead." })
-        }
-        */
 
         const isMatch = await bcrypt.compare(password, user.password)
         if(!isMatch){

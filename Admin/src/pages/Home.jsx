@@ -25,7 +25,6 @@ function Home() {
         setStats(result.data)
       }
     } catch (error) {
-      console.log("Get Stats error ❌", error.response?.data || error.message)
     } finally {
       setLoading(false)
     }
@@ -49,7 +48,6 @@ function Home() {
           </p>
           
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mb-8'>
-            {/* Total Vehicles Card */}
             <div className='bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 card-shadow-hover animate-fade-in-up'>
               <div className='flex items-center justify-between'>
                 <div>
@@ -66,7 +64,6 @@ function Home() {
               </div>
             </div>
             
-            {/* Total Orders Card */}
             <div className='bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 card-shadow-hover animate-fade-in-up' style={{ animationDelay: '0.1s' }}>
               <div className='flex items-center justify-between'>
                 <div>
@@ -83,7 +80,6 @@ function Home() {
               </div>
             </div>
             
-            {/* Total Users Card */}
             <div className='bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 card-shadow-hover animate-fade-in-up' style={{ animationDelay: '0.2s' }}>
               <div className='flex items-center justify-between'>
                 <div>
@@ -101,7 +97,6 @@ function Home() {
             </div>
           </div>
 
-          {/* Revenue Cards */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6 mb-8'>
             <div className='bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 card-shadow-hover animate-fade-in-up' style={{ animationDelay: '0.3s' }}>
               <div className='flex items-center justify-between'>
@@ -138,7 +133,6 @@ function Home() {
             </div>
           </div>
           
-          {/* Welcome Card */}
           <div className='bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl shadow-xl p-8 text-white animate-fade-in-up' style={{ animationDelay: '0.5s' }}>
             <h2 className='text-2xl font-bold mb-3'>Welcome Back! 👋</h2>
             <p className='text-white/90 mb-4'>

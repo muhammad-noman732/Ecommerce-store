@@ -3,87 +3,132 @@ import { User } from "../model/user.model.js"
 import Product from "../model/productModel.js"
 
 
-//for user
-export const placeOrder=async(req,res)=>{
-    try{
+export const placeOrder = async (req, res) => {
+  try {
 
-        const {items , amount , address} = req.body
+    const { items, amount, address, paymentMethod, stripeSessionId } = req.body
 
-        const userId=req.userId
+    const userId = req.userId
 
-        const orderData={
-            items,
-            amount,
-            userId,
-            address,
-            paymentMethod:'COD',
-            payment:false,
-            date:Date.now()
-        }
+    const initialPaymentStatus = paymentMethod === 'Stripe' ? false : false;
 
-       
-        const newOrder=await Order.create(orderData)
-
-      // After placing an order, the user's cart is emptied. Because we have userOrders controller to store all the orders placed by user  
-        await User.findByIdAndUpdate(userId,{cartData:{}})
-
-      return res.status(201).json({message:"Order Placed."})  
-
-    }catch(error){
-      return res.status(500).json({message:`Order Place error ${error}`})
+    const orderData = {
+      items,
+      amount,
+      userId,
+      address,
+      paymentMethod: paymentMethod || 'COD',
+      payment: initialPaymentStatus,
+      stripeSessionId: stripeSessionId || null,
+      paymentStatus: paymentMethod === 'Stripe' ? 'pending' : 'cod',
+      date: Date.now()
     }
-}
 
-export const userOrders=async(req,res)=>{
-  try{
+    const newOrder = await Order.create(orderData)
 
-    // it is coming from isAuth middleware
-    const userId=req.userId
+    await User.findByIdAndUpdate(userId, { cartData: {} })
 
-    const orders=await Order.find({userId})
+    return res.status(201).json({
+      success: true,
+      message: "Order Placed.",
+      orderId: newOrder._id
+    })
 
-      return res.status(201).json(orders)  
-
-
-  }catch(error){
-      return res.status(500).json({message:`User's Order error ${error}`})
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `Order Place error ${error}`
+    })
   }
 }
 
-//for Admin
+export const userOrders = async (req, res) => {
+  try {
+    const userId = req.userId
 
-export const allOrders=async(req,res)=>{
-  try{
+    const orders = await Order.find({ userId })
 
-    const orders=await Order.find({})
+    return res.status(201).json(orders)
+
+
+  } catch (error) {
+    return res.status(500).json({ message: `User's Order error ${error}` })
+  }
+}
+
+export const allOrders = async (req, res) => {
+  try {
+
+    const orders = await Order.find({})
     return res.status(200).json(orders)
 
-  }catch(error){
+  } catch (error) {
 
-    return res.status(500).json({message:"Admin all orders error"})
+    return res.status(500).json({ message: "Admin all orders error" })
 
   }
 }
 
-export const updateStatus=async(req,res)=>{
-  try{
+export const updateStatus = async (req, res) => {
+  try {
 
-    const {orderId ,status}=req.body
+    const { orderId, status } = req.body
 
-    await Order.findByIdAndUpdate(orderId,{status})
+    await Order.findByIdAndUpdate(orderId, { status })
 
-     return res.status(200).json({message:"Status updated"}) 
-  }catch(error){
-   return res.status(500).json({message:error.message})
+    return res.status(200).json({ message: "Status updated" })
+  } catch (error) {
+    return res.status(500).json({ message: error.message })
   }
 }
 
-// Get dashboard statistics (Admin only)
-export const getStats = async(req,res)=>{
-  try{
+export const updatePaymentStatus = async (req, res) => {
+  try {
+    const { orderId, stripeSessionId, paymentStatus } = req.body
 
-    if(req.role !== 'ADMIN'){
-      return res.status(403).json({message:"Forbidden. Admins only."})
+    const updateData = {
+      payment: true,
+      paymentStatus: paymentStatus || 'completed',
+      paidAt: new Date()
+    }
+
+    let order;
+    if (orderId) {
+      order = await Order.findByIdAndUpdate(orderId, updateData, { new: true })
+    } else if (stripeSessionId) {
+      order = await Order.findOneAndUpdate(
+        { stripeSessionId },
+        updateData,
+        { new: true }
+      )
+    }
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found"
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Payment status updated",
+      order
+    })
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `Update payment status error: ${error.message}`
+    })
+  }
+}
+
+export const getStats = async (req, res) => {
+  try {
+
+    if (req.role !== 'ADMIN') {
+      return res.status(403).json({ message: "Forbidden. Admins only." })
     }
 
     const [totalVehicles, totalOrders, totalUsers, orders] = await Promise.all([
@@ -93,12 +138,10 @@ export const getStats = async(req,res)=>{
       Order.find({}).select('amount payment')
     ])
 
-    // Calculate total revenue (sum of all paid orders)
     const totalRevenue = orders
       .filter(order => order.payment === true)
       .reduce((sum, order) => sum + (order.amount || 0), 0)
 
-    // Calculate pending revenue (sum of unpaid orders)
     const pendingRevenue = orders
       .filter(order => order.payment === false)
       .reduce((sum, order) => sum + (order.amount || 0), 0)
@@ -111,7 +154,7 @@ export const getStats = async(req,res)=>{
       pendingRevenue
     })
 
-  }catch(error){
-    return res.status(500).json({message:`Get Stats error ${error}`})
+  } catch (error) {
+    return res.status(500).json({ message: `Get Stats error ${error}` })
   }
 }

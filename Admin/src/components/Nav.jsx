@@ -33,7 +33,6 @@ function Nav() {
 
   return (
     <nav className='w-full h-[70px] bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800 z-50 fixed top-0 left-0 right-0 flex items-center justify-between px-6 shadow-sm'>
-      {/* Logo and name*/}
       <div className='flex items-center gap-3 cursor-pointer' onClick={() => navigate("/")}>
         <img src={logo} alt="IMK Autos" className='w-8 h-8' />
         <h1 className='text-xl font-bold gradient-primary bg-clip-text text-transparent'>

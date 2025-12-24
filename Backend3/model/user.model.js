@@ -35,6 +35,10 @@ const userSchema = new mongoose.Schema(
       enum: ["USER", "ADMIN"], 
       default: "USER",        
     },
+    stripeCustomerId :{
+      type: String,
+      default:null
+    }
   },
   { timestamps: true, minimize: false }
 );

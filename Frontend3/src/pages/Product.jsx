@@ -4,15 +4,12 @@ import CarCard from '../Components/CarCard'
 import { FaSearch, FaSlidersH } from 'react-icons/fa'
 
 function Product() {
-    // ==================== CONTEXT & STATE ====================
     const { products, getProducts } = useContext(shopDataContext)
     
-    // Filter states
     const [searchQuery, setSearchQuery] = useState('')
     const [showFilters, setShowFilters] = useState(true)
-    const [priceRange, setPriceRange] = useState([0, 0]) // Will be set dynamically
+    const [priceRange, setPriceRange] = useState([0, 0])
     
-    // Filter values
     const [selectedBrand, setSelectedBrand] = useState('all')
     const [selectedFuelType, setSelectedFuelType] = useState('all')
     const [selectedTransmission, setSelectedTransmission] = useState('all')
@@ -21,23 +18,19 @@ function Product() {
     const [minYear, setMinYear] = useState('')
     const [maxYear, setMaxYear] = useState('')
     
-    // Sort & Pagination
     const [sortBy, setSortBy] = useState('newest')
     const [currentPage, setCurrentPage] = useState(1)
     const [itemsPerPage] = useState(12)
     
-    // Filtered and displayed vehicles
     const [displayedVehicles, setDisplayedVehicles] = useState([])
     const [totalPages, setTotalPages] = useState(1)
     
-    // Get unique brands from vehicles
     const availableBrands = React.useMemo(() => {
         if (!Array.isArray(products)) return []
         const brands = [...new Set(products.map(v => v.brand).filter(Boolean))]
         return brands.sort()
     }, [products])
     
-    // Calculate dynamic price range from actual vehicles
     const { minPrice, maxPrice, minYearAvailable, maxYearAvailable } = React.useMemo(() => {
         if (!Array.isArray(products) || products.length === 0) {
             return { minPrice: 0, maxPrice: 100000, minYearAvailable: 1990, maxYearAvailable: new Date().getFullYear() }
@@ -47,28 +40,22 @@ function Product() {
         const years = products.map(v => v.year || 0).filter(y => y > 0)
         
         return {
-            minPrice: prices.length > 0 ? Math.floor(Math.min(...prices) / 1000) * 1000 : 0, // Round down to nearest 1000
-            maxPrice: prices.length > 0 ? Math.ceil(Math.max(...prices) / 1000) * 1000 : 100000, // Round up to nearest 1000
+            minPrice: prices.length > 0 ? Math.floor(Math.min(...prices) / 1000) * 1000 : 0,
+            maxPrice: prices.length > 0 ? Math.ceil(Math.max(...prices) / 1000) * 1000 : 100000,
             minYearAvailable: years.length > 0 ? Math.min(...years) : 1990,
             maxYearAvailable: years.length > 0 ? Math.max(...years) : new Date().getFullYear()
         }
     }, [products])
     
-    // Initialize price range when products are loaded
     useEffect(() => {
         if (maxPrice > 0 && priceRange[1] === 0) {
             setPriceRange([minPrice, maxPrice])
         }
     }, [minPrice, maxPrice])
     
-    // ==================== FETCH PRODUCTS ====================
-    // Fetch all products once on mount for client-side filtering
     useEffect(() => {
-        // Fetch large number to get all products, or we could fetch all
         getProducts(1, 1000)
     }, [])
-    
-    // ==================== FILTER & SORT LOGIC ====================
     useEffect(() => {
         if (!Array.isArray(products)) {
             setDisplayedVehicles([])

@@ -48,8 +48,11 @@ function Nav() {
           <Link to="/" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors">
             Home
           </Link>
+          <Link to="/services" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors">
+            Services
+          </Link>
           <Link to="/product" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors">
-            Inventory
+            Products
           </Link>
           <Link to="/about" className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors">
             About Us
@@ -173,11 +176,18 @@ function Nav() {
               Home
             </Link>
             <Link
+              to="/services"
+              className="block text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Services
+            </Link>
+            <Link
               to="/product"
               className="block text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Inventory
+              Products
             </Link>
             <Link
               to="/about"
