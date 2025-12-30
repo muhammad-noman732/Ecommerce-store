@@ -3,6 +3,7 @@ import Stripe from "stripe";
 dotenv.config();
 import { User } from "../model/user.model.js";
 import Order from "../model/order.model.js";
+import { sendOrderConfirmationEmail, sendOrderNotificationToBusiness } from "../utils/emailService.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2024-06-20",
@@ -81,6 +82,9 @@ export const createCheckoutSession = async (req, res) => {
       };
     });
 
+    // Generate idempotency key based on user, items, and amount to prevent duplicate sessions
+    const idempotencyKey = `checkout_${userId}_${Date.now()}_${amount}`;
+
     const sessionPayload = {
       customer: customerId,
       payment_method_types: ['card'],
@@ -99,7 +103,9 @@ export const createCheckoutSession = async (req, res) => {
       shipping_address_collection: {},
     };
 
-    const session = await stripe.checkout.sessions.create(sessionPayload);
+    const session = await stripe.checkout.sessions.create(sessionPayload, {
+      idempotencyKey: idempotencyKey
+    });
 
     return res.json({
       success: true,
@@ -189,10 +195,37 @@ export const stripeWebhook = async (req, res) => {
       try {
         const order = await Order.findOne({ stripeSessionId: session.id });
         if (order) {
+          // Idempotency check: Only update if not already paid
+          if (order.payment === true && order.paymentStatus === 'completed') {
+            console.log(`Order ${order._id} already processed for session ${session.id}`);
+            break;
+          }
+
           order.payment = true;
           order.paymentStatus = 'completed';
           order.paidAt = new Date();
           await order.save();
+
+          // Send order completion emails (non-blocking)
+          try {
+            const user = await User.findById(order.userId);
+            if (user) {
+              // Send updated order confirmation to customer
+              sendOrderConfirmationEmail(order, user).catch(err => 
+                console.error('Failed to send payment confirmation to customer:', err)
+              );
+              
+              // Send updated notification to business
+              sendOrderNotificationToBusiness(order, user).catch(err => 
+                console.error('Failed to send payment notification to business:', err)
+              );
+            }
+          } catch (emailError) {
+            // Don't fail the webhook if email fails
+            console.error('Error sending payment completion emails:', emailError);
+          }
+        } else {
+          console.warn(`Order not found for Stripe session: ${session.id}`);
         }
       } catch (error) {
         console.error('Error updating order from webhook:', error);
@@ -209,10 +242,7 @@ export const stripeWebhook = async (req, res) => {
   res.json({ received: true });
 };
 
-/**
- * Legacy function - can be removed if not used elsewhere
- * Keeping for backward compatibility
- */
+
 export const createPayment = async (req, res) => {
   try {
     const { amount, currency } = req.body;

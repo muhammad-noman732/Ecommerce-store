@@ -1,6 +1,7 @@
 import Order from "../model/order.model.js"
 import { User } from "../model/user.model.js"
 import Product from "../model/productModel.js"
+import { sendOrderConfirmationEmail, sendOrderNotificationToBusiness } from "../utils/emailService.js"
 
 
 export const placeOrder = async (req, res) => {
@@ -9,6 +10,18 @@ export const placeOrder = async (req, res) => {
     const { items, amount, address, paymentMethod, stripeSessionId } = req.body
 
     const userId = req.userId
+
+    // Idempotency check: If Stripe payment, check if order with this sessionId already exists
+    if (paymentMethod === 'Stripe' && stripeSessionId) {
+      const existingOrder = await Order.findOne({ stripeSessionId });
+      if (existingOrder) {
+        return res.status(200).json({
+          success: true,
+          message: "Order already exists for this payment session.",
+          orderId: existingOrder._id
+        });
+      }
+    }
 
     const initialPaymentStatus = paymentMethod === 'Stripe' ? false : false;
 
@@ -27,6 +40,25 @@ export const placeOrder = async (req, res) => {
     const newOrder = await Order.create(orderData)
 
     await User.findByIdAndUpdate(userId, { cartData: {} })
+
+    // Send order confirmation emails (non-blocking)
+    try {
+      const user = await User.findById(userId);
+      if (user) {
+        // Send email to customer
+        sendOrderConfirmationEmail(newOrder, user).catch(err => 
+          console.error('Failed to send order confirmation to customer:', err)
+        );
+        
+        // Send notification to business
+        sendOrderNotificationToBusiness(newOrder, user).catch(err => 
+          console.error('Failed to send order notification to business:', err)
+        );
+      }
+    } catch (emailError) {
+      // Don't fail the order if email fails
+      console.error('Error sending order emails:', emailError);
+    }
 
     return res.status(201).json({
       success: true,
@@ -86,13 +118,35 @@ export const updatePaymentStatus = async (req, res) => {
   try {
     const { orderId, stripeSessionId, paymentStatus } = req.body
 
+    let order;
+    if (orderId) {
+      order = await Order.findById(orderId);
+    } else if (stripeSessionId) {
+      order = await Order.findOne({ stripeSessionId });
+    }
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found"
+      })
+    }
+
+    // Idempotency check: If already paid, return success without updating
+    if (order.payment === true && order.paymentStatus === 'completed') {
+      return res.status(200).json({
+        success: true,
+        message: "Payment status already updated",
+        order
+      });
+    }
+
     const updateData = {
       payment: true,
       paymentStatus: paymentStatus || 'completed',
       paidAt: new Date()
     }
 
-    let order;
     if (orderId) {
       order = await Order.findByIdAndUpdate(orderId, updateData, { new: true })
     } else if (stripeSessionId) {
@@ -103,11 +157,25 @@ export const updatePaymentStatus = async (req, res) => {
       )
     }
 
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found"
-      })
+    // Send order completion emails when payment is completed (non-blocking)
+    if (order.payment === true && paymentStatus === 'completed') {
+      try {
+        const user = await User.findById(order.userId);
+        if (user) {
+          // Send updated order confirmation to customer
+          sendOrderConfirmationEmail(order, user).catch(err => 
+            console.error('Failed to send payment confirmation to customer:', err)
+          );
+          
+          // Send updated notification to business
+          sendOrderNotificationToBusiness(order, user).catch(err => 
+            console.error('Failed to send payment notification to business:', err)
+          );
+        }
+      } catch (emailError) {
+        // Don't fail the payment update if email fails
+        console.error('Error sending payment completion emails:', emailError);
+      }
     }
 
     return res.status(200).json({

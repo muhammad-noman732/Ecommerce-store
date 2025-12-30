@@ -35,7 +35,9 @@ const orderSchema = new mongoose.Schema({
     },
     stripeSessionId: {
         type: String,
-        default: null
+        default: null,
+        sparse: true, // Allows multiple null values but unique non-null values
+        index: true
     },
     paymentStatus: {
         type: String,
