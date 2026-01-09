@@ -197,7 +197,7 @@ export const stripeWebhook = async (req, res) => {
         if (order) {
           // Idempotency check: Only update if not already paid
           if (order.payment === true && order.paymentStatus === 'completed') {
-            console.log(`Order ${order._id} already processed for session ${session.id}`);
+
             break;
           }
 
@@ -211,12 +211,12 @@ export const stripeWebhook = async (req, res) => {
             const user = await User.findById(order.userId);
             if (user) {
               // Send updated order confirmation to customer
-              sendOrderConfirmationEmail(order, user).catch(err => 
+              sendOrderConfirmationEmail(order, user).catch(err =>
                 console.error('Failed to send payment confirmation to customer:', err)
               );
-              
+
               // Send updated notification to business
-              sendOrderNotificationToBusiness(order, user).catch(err => 
+              sendOrderNotificationToBusiness(order, user).catch(err =>
                 console.error('Failed to send payment notification to business:', err)
               );
             }
