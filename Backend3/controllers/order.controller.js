@@ -41,23 +41,21 @@ export const placeOrder = async (req, res) => {
 
     await User.findByIdAndUpdate(userId, { cartData: {} })
 
-    // Send order confirmation emails (non-blocking)
-    try {
-      const user = await User.findById(userId);
-      if (user) {
-        // Send email to customer
-        sendOrderConfirmationEmail(newOrder, user).catch(err => 
-          console.error('Failed to send order confirmation to customer:', err)
-        );
-        
-        // Send notification to business
-        sendOrderNotificationToBusiness(newOrder, user).catch(err => 
-          console.error('Failed to send order notification to business:', err)
-        );
+    // Send order confirmation emails (only for non-Stripe orders like COD)
+    // For Stripe, emails are sent after payment confirmation in webhook/verify endpoint
+    if (paymentMethod !== 'Stripe') {
+      try {
+        const user = await User.findById(userId);
+        if (user) {
+          // Send email to customer
+          sendOrderConfirmationEmail(newOrder, user).catch(() => { });
+
+          // Send notification to business
+          sendOrderNotificationToBusiness(newOrder, user).catch(() => { });
+        }
+      } catch (emailError) {
+        // Don't fail the order if email fails
       }
-    } catch (emailError) {
-      // Don't fail the order if email fails
-      console.error('Error sending order emails:', emailError);
     }
 
     return res.status(201).json({
@@ -163,18 +161,13 @@ export const updatePaymentStatus = async (req, res) => {
         const user = await User.findById(order.userId);
         if (user) {
           // Send updated order confirmation to customer
-          sendOrderConfirmationEmail(order, user).catch(err => 
-            console.error('Failed to send payment confirmation to customer:', err)
-          );
-          
+          sendOrderConfirmationEmail(order, user).catch(() => { });
+
           // Send updated notification to business
-          sendOrderNotificationToBusiness(order, user).catch(err => 
-            console.error('Failed to send payment notification to business:', err)
-          );
+          sendOrderNotificationToBusiness(order, user).catch(() => { });
         }
       } catch (emailError) {
         // Don't fail the payment update if email fails
-        console.error('Error sending payment completion emails:', emailError);
       }
     }
 

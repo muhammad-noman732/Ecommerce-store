@@ -1,23 +1,25 @@
-import sgMail from '@sendgrid/mail';
+import { Resend } from 'resend';
 
+// Helper to get fresh config when needed
 const getConfig = () => {
-  const apiKey = process.env.SENDGRID_API_KEY;
-  if (apiKey) sgMail.setApiKey(apiKey);
+  const apiKey = process.env.RESEND_API_KEY;
+  const resend = apiKey ? new Resend(apiKey) : null;
 
   return {
-    FROM_EMAIL: process.env.SENDGRID_FROM_EMAIL,
-    FROM_NAME: process.env.SENDGRID_FROM_NAME,
-    TO_EMAIL: process.env.SENDGRID_TO_EMAIL
+    resend,
+    FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
+    FROM_NAME: process.env.RESEND_FROM_NAME,
+    TO_EMAIL: process.env.RESEND_TO_EMAIL
   };
 };
 
 export const sendOrderConfirmationEmail = async (orderData, userData) => {
   try {
-    const { FROM_EMAIL, FROM_NAME } = getConfig();
+    const { resend, FROM_EMAIL, FROM_NAME } = getConfig();
     const { items, amount, address, paymentMethod, status, _id } = orderData;
     const { name, email } = userData;
 
-    if (!FROM_EMAIL || !FROM_NAME) return false;
+    if (!resend || !FROM_EMAIL || !FROM_NAME) return false;
 
     const itemsList = items.map((item, index) => `
       <tr>
@@ -32,12 +34,9 @@ export const sendOrderConfirmationEmail = async (orderData, userData) => {
     const paymentStatusText = paymentMethod === 'Stripe' ? 'Paid' : 'Cash on Delivery';
     const paymentStatusColor = paymentMethod === 'Stripe' ? '#10b981' : '#f59e0b';
 
-    const msg = {
+    await resend.emails.send({
+      from: `${FROM_NAME} <${FROM_EMAIL}>`,
       to: email,
-      from: {
-        email: FROM_EMAIL,
-        name: FROM_NAME
-      },
       subject: `Order Confirmation - Order #${_id.toString().slice(-8)}`,
       html: `
         <!DOCTYPE html>
@@ -107,9 +106,8 @@ export const sendOrderConfirmationEmail = async (orderData, userData) => {
         </body>
         </html>
       `
-    };
+    });
 
-    await sgMail.send(msg);
     return true;
   } catch (error) {
     return false;
@@ -118,11 +116,11 @@ export const sendOrderConfirmationEmail = async (orderData, userData) => {
 
 export const sendOrderNotificationToBusiness = async (orderData, userData) => {
   try {
-    const { FROM_EMAIL, FROM_NAME, TO_EMAIL } = getConfig();
+    const { resend, FROM_EMAIL, FROM_NAME, TO_EMAIL } = getConfig();
     const { items, amount, address, paymentMethod, status, _id, date } = orderData;
     const { name, email } = userData;
 
-    if (!FROM_EMAIL || !FROM_NAME || !TO_EMAIL) return false;
+    if (!resend || !FROM_EMAIL || !FROM_NAME || !TO_EMAIL) return false;
 
     const itemsList = items.map((item, index) => `
       <tr>
@@ -142,13 +140,10 @@ export const sendOrderNotificationToBusiness = async (orderData, userData) => {
       minute: '2-digit'
     });
 
-    const msg = {
+    await resend.emails.send({
+      from: `${FROM_NAME} Order System <${FROM_EMAIL}>`,
       to: TO_EMAIL,
-      from: {
-        email: FROM_EMAIL,
-        name: `${FROM_NAME} Order System`
-      },
-      replyTo: email,
+      reply_to: email, // Valid Resend property is reply_to
       subject: `New Order Received - Order #${_id.toString().slice(-8)}`,
       html: `
         <!DOCTYPE html>
@@ -212,9 +207,8 @@ export const sendOrderNotificationToBusiness = async (orderData, userData) => {
         </body>
         </html>
       `
-    };
+    });
 
-    await sgMail.send(msg);
     return true;
   } catch (error) {
     return false;
@@ -223,18 +217,15 @@ export const sendOrderNotificationToBusiness = async (orderData, userData) => {
 
 export const sendContactFormEmail = async (contactData) => {
   try {
-    const { FROM_EMAIL, FROM_NAME, TO_EMAIL } = getConfig();
+    const { resend, FROM_EMAIL, FROM_NAME, TO_EMAIL } = getConfig();
     const { name, email, phone, subject, message, serviceRequired } = contactData;
 
-    if (!FROM_EMAIL || !FROM_NAME || !TO_EMAIL) return false;
+    if (!resend || !FROM_EMAIL || !FROM_NAME || !TO_EMAIL) return false;
 
-    const msg = {
+    await resend.emails.send({
+      from: `${FROM_NAME} Contact Form <${FROM_EMAIL}>`,
       to: TO_EMAIL,
-      from: {
-        email: FROM_EMAIL,
-        name: `${FROM_NAME} Contact Form`
-      },
-      replyTo: email,
+      reply_to: email,
       subject: `Contact Form: ${subject || 'No Subject'}`,
       html: `
         <!DOCTYPE html>
@@ -271,9 +262,8 @@ export const sendContactFormEmail = async (contactData) => {
         </body>
         </html>
       `
-    };
+    });
 
-    await sgMail.send(msg);
     return true;
   } catch (error) {
     throw error;
@@ -282,17 +272,14 @@ export const sendContactFormEmail = async (contactData) => {
 
 export const sendContactConfirmationEmail = async (contactData) => {
   try {
-    const { FROM_EMAIL, FROM_NAME } = getConfig();
+    const { resend, FROM_EMAIL, FROM_NAME } = getConfig();
     const { name, email, message } = contactData;
 
-    if (!FROM_EMAIL || !FROM_NAME) return false;
+    if (!resend || !FROM_EMAIL || !FROM_NAME) return false;
 
-    const msg = {
+    await resend.emails.send({
+      from: `${FROM_NAME} <${FROM_EMAIL}>`,
       to: email,
-      from: {
-        email: FROM_EMAIL,
-        name: FROM_NAME
-      },
       subject: `Thank you for contacting ${FROM_NAME}`,
       html: `
         <!DOCTYPE html>
@@ -326,12 +313,10 @@ export const sendContactConfirmationEmail = async (contactData) => {
         </body>
         </html>
       `
-    };
+    });
 
-    await sgMail.send(msg);
     return true;
   } catch (error) {
     return false;
   }
 };
-
