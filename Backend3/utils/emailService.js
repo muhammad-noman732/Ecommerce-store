@@ -1,27 +1,38 @@
-import { Resend } from 'resend';
+import brevo from '@getbrevo/brevo';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // Helper to get fresh config when needed
 const getConfig = () => {
-  const apiKey = process.env.RESEND_API_KEY;
-  const resend = apiKey ? new Resend(apiKey) : null;
+    const apiKey = process.env.BREVO_API_KEY;
+    if (!apiKey) return null;
 
-  return {
-    resend,
-    FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
-    FROM_NAME: process.env.RESEND_FROM_NAME,
-    TO_EMAIL: process.env.RESEND_TO_EMAIL
-  };
+    let defaultClient = brevo.ApiClient.instance;
+    let auth = defaultClient.authentications['api-key'];
+    auth.apiKey = apiKey;
+
+    const apiInstance = new brevo.TransactionalEmailsApi();
+
+    return {
+        apiInstance,
+        FROM_EMAIL: process.env.BREVO_FROM_EMAIL,
+        FROM_NAME: process.env.BREVO_FROM_NAME,
+        TO_EMAIL: process.env.BREVO_TO_EMAIL
+    };
 };
 
 export const sendOrderConfirmationEmail = async (orderData, userData) => {
-  try {
-    const { resend, FROM_EMAIL, FROM_NAME } = getConfig();
-    const { items, amount, address, paymentMethod, status, _id } = orderData;
-    const { name, email } = userData;
+    try {
+        const config = getConfig();
+        if (!config) return false;
+        const { apiInstance, FROM_EMAIL, FROM_NAME } = config;
+        const { items, amount, address, paymentMethod, status, _id } = orderData;
+        const { name, email } = userData;
 
-    if (!resend || !FROM_EMAIL || !FROM_NAME) return false;
+        if (!FROM_EMAIL || !FROM_NAME) return false;
 
-    const itemsList = items.map((item, index) => `
+        const itemsList = items.map((item, index) => `
       <tr>
         <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${index + 1}</td>
         <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${item.name || item.title || 'Product'}</td>
@@ -31,14 +42,14 @@ export const sendOrderConfirmationEmail = async (orderData, userData) => {
       </tr>
     `).join('');
 
-    const paymentStatusText = paymentMethod === 'Stripe' ? 'Paid' : 'Cash on Delivery';
-    const paymentStatusColor = paymentMethod === 'Stripe' ? '#10b981' : '#f59e0b';
+        const paymentStatusText = paymentMethod === 'Stripe' ? 'Paid' : 'Cash on Delivery';
+        const paymentStatusColor = paymentMethod === 'Stripe' ? '#10b981' : '#f59e0b';
 
-    await resend.emails.send({
-      from: `${FROM_NAME} <${FROM_EMAIL}>`,
-      to: email,
-      subject: `Order Confirmation - Order #${_id.toString().slice(-8)}`,
-      html: `
+        let sendSmtpEmail = new brevo.SendSmtpEmail();
+        sendSmtpEmail.subject = `Order Confirmation - Order #${_id.toString().slice(-8)}`;
+        sendSmtpEmail.sender = { "name": FROM_NAME, "email": FROM_EMAIL };
+        sendSmtpEmail.to = [{ "email": email, "name": name }];
+        sendSmtpEmail.htmlContent = `
         <!DOCTYPE html>
         <html>
         <head>
@@ -105,24 +116,26 @@ export const sendOrderConfirmationEmail = async (orderData, userData) => {
           </div>
         </body>
         </html>
-      `
-    });
+    `;
 
-    return true;
-  } catch (error) {
-    return false;
-  }
+        await apiInstance.sendTransacEmail(sendSmtpEmail);
+        return true;
+    } catch (error) {
+        return false;
+    }
 };
 
 export const sendOrderNotificationToBusiness = async (orderData, userData) => {
-  try {
-    const { resend, FROM_EMAIL, FROM_NAME, TO_EMAIL } = getConfig();
-    const { items, amount, address, paymentMethod, status, _id, date } = orderData;
-    const { name, email } = userData;
+    try {
+        const config = getConfig();
+        if (!config) return false;
+        const { apiInstance, FROM_EMAIL, FROM_NAME, TO_EMAIL } = config;
+        const { items, amount, address, paymentMethod, status, _id, date } = orderData;
+        const { name, email } = userData;
 
-    if (!resend || !FROM_EMAIL || !FROM_NAME || !TO_EMAIL) return false;
+        if (!FROM_EMAIL || !FROM_NAME || !TO_EMAIL) return false;
 
-    const itemsList = items.map((item, index) => `
+        const itemsList = items.map((item, index) => `
       <tr>
         <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${index + 1}</td>
         <td style="padding: 10px; border-bottom: 1px solid #e5e7eb;">${item.name || item.title || 'Product'}</td>
@@ -132,20 +145,20 @@ export const sendOrderNotificationToBusiness = async (orderData, userData) => {
       </tr>
     `).join('');
 
-    const orderDate = new Date(date).toLocaleString('en-GB', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+        const orderDate = new Date(date).toLocaleString('en-GB', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
 
-    await resend.emails.send({
-      from: `${FROM_NAME} Order System <${FROM_EMAIL}>`,
-      to: TO_EMAIL,
-      reply_to: email, // Valid Resend property is reply_to
-      subject: `New Order Received - Order #${_id.toString().slice(-8)}`,
-      html: `
+        let sendSmtpEmail = new brevo.SendSmtpEmail();
+        sendSmtpEmail.subject = `New Order Received - Order #${_id.toString().slice(-8)}`;
+        sendSmtpEmail.sender = { "name": `${FROM_NAME} Order System`, "email": FROM_EMAIL };
+        sendSmtpEmail.to = [{ "email": TO_EMAIL, "name": "Admin" }];
+        sendSmtpEmail.replyTo = { "email": email, "name": name };
+        sendSmtpEmail.htmlContent = `
         <!DOCTYPE html>
         <html>
         <head>
@@ -206,28 +219,30 @@ export const sendOrderNotificationToBusiness = async (orderData, userData) => {
           </div>
         </body>
         </html>
-      `
-    });
+    `;
 
-    return true;
-  } catch (error) {
-    return false;
-  }
+        await apiInstance.sendTransacEmail(sendSmtpEmail);
+        return true;
+    } catch (error) {
+        return false;
+    }
 };
 
 export const sendContactFormEmail = async (contactData) => {
-  try {
-    const { resend, FROM_EMAIL, FROM_NAME, TO_EMAIL } = getConfig();
-    const { name, email, phone, subject, message, serviceRequired } = contactData;
+    try {
+        const config = getConfig();
+        if (!config) return false;
+        const { apiInstance, FROM_EMAIL, FROM_NAME, TO_EMAIL } = config;
+        const { name, email, phone, subject, message, serviceRequired } = contactData;
 
-    if (!resend || !FROM_EMAIL || !FROM_NAME || !TO_EMAIL) return false;
+        if (!FROM_EMAIL || !FROM_NAME || !TO_EMAIL) return false;
 
-    await resend.emails.send({
-      from: `${FROM_NAME} Contact Form <${FROM_EMAIL}>`,
-      to: TO_EMAIL,
-      reply_to: email,
-      subject: `Contact Form: ${subject || 'No Subject'}`,
-      html: `
+        let sendSmtpEmail = new brevo.SendSmtpEmail();
+        sendSmtpEmail.subject = `Contact Form: ${subject || 'No Subject'}`;
+        sendSmtpEmail.sender = { "name": `${FROM_NAME} Contact Form`, "email": FROM_EMAIL };
+        sendSmtpEmail.to = [{ "email": TO_EMAIL, "name": "Admin" }];
+        sendSmtpEmail.replyTo = { "email": email, "name": name };
+        sendSmtpEmail.htmlContent = `
         <!DOCTYPE html>
         <html>
         <head>
@@ -261,27 +276,29 @@ export const sendContactFormEmail = async (contactData) => {
           </div>
         </body>
         </html>
-      `
-    });
+    `;
 
-    return true;
-  } catch (error) {
-    throw error;
-  }
+        await apiInstance.sendTransacEmail(sendSmtpEmail);
+        return true;
+    } catch (error) {
+        throw error;
+    }
 };
 
 export const sendContactConfirmationEmail = async (contactData) => {
-  try {
-    const { resend, FROM_EMAIL, FROM_NAME } = getConfig();
-    const { name, email, message } = contactData;
+    try {
+        const config = getConfig();
+        if (!config) return false;
+        const { apiInstance, FROM_EMAIL, FROM_NAME } = config;
+        const { name, email, message } = contactData;
 
-    if (!resend || !FROM_EMAIL || !FROM_NAME) return false;
+        if (!FROM_EMAIL || !FROM_NAME) return false;
 
-    await resend.emails.send({
-      from: `${FROM_NAME} <${FROM_EMAIL}>`,
-      to: email,
-      subject: `Thank you for contacting ${FROM_NAME}`,
-      html: `
+        let sendSmtpEmail = new brevo.SendSmtpEmail();
+        sendSmtpEmail.subject = `Thank you for contacting ${FROM_NAME}`;
+        sendSmtpEmail.sender = { "name": FROM_NAME, "email": FROM_EMAIL };
+        sendSmtpEmail.to = [{ "email": email, "name": name }];
+        sendSmtpEmail.htmlContent = `
         <!DOCTYPE html>
         <html>
         <head>
@@ -312,11 +329,11 @@ export const sendContactConfirmationEmail = async (contactData) => {
           </div>
         </body>
         </html>
-      `
-    });
+    `;
 
-    return true;
-  } catch (error) {
-    return false;
-  }
+        await apiInstance.sendTransacEmail(sendSmtpEmail);
+        return true;
+    } catch (error) {
+        return false;
+    }
 };
