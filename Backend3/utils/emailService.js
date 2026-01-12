@@ -8,11 +8,8 @@ const getConfig = () => {
     const apiKey = process.env.BREVO_API_KEY;
     if (!apiKey) return null;
 
-    let defaultClient = brevo.ApiClient.instance;
-    let auth = defaultClient.authentications['api-key'];
-    auth.apiKey = apiKey;
-
     const apiInstance = new brevo.TransactionalEmailsApi();
+    apiInstance.setApiKey(brevo.TransactionalEmailsApiApiKeys.apiKey, apiKey);
 
     return {
         apiInstance,
