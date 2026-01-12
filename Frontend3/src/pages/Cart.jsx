@@ -1,12 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { shopDataContext } from '../Context/ShopContext'
+import { userDataContext } from '../Context/UserContext'
 import { useNavigate } from 'react-router-dom'
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FiMinus, FiPlus } from "react-icons/fi";
+import { toast } from 'react-toastify';
 import CartTotal from '../Components/CartTotal';
 
 function Cart() {
   const { products, currency, cartItem, updateQuantity } = useContext(shopDataContext)
+  const { userData } = useContext(userDataContext)
   const [cartData, setCartData] = useState([])
   const navigate = useNavigate()
 
@@ -75,8 +78,8 @@ function Cart() {
               const productData = products.find((product) => product._id === item._id);
               if (!productData) return null;
 
-              const displayImage = (productData.images && productData.images.length > 0) 
-                ? productData.images[0] 
+              const displayImage = (productData.images && productData.images.length > 0)
+                ? productData.images[0]
                 : productData.image1 || 'https://via.placeholder.com/300x200?text=Vehicle';
               const displayName = productData.title || productData.name || `${productData.brand} ${productData.model}`;
 
@@ -163,7 +166,12 @@ function Cart() {
                 className="w-full gradient-primary text-white font-semibold text-lg px-8 py-4 rounded-lg hover:opacity-90 transition-opacity shadow-lg hover:shadow-xl mt-6"
                 onClick={() => {
                   if (cartData.length > 0) {
-                    navigate("/placeorder")
+                    if (userData) {
+                      navigate("/placeorder")
+                    } else {
+                      toast.error("Please login to proceed to checkout");
+                      navigate("/login")
+                    }
                   }
                 }}
               >
@@ -179,7 +187,7 @@ function Cart() {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 
