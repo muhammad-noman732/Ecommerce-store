@@ -3,7 +3,7 @@ import Nav from '../components/Nav'
 import Sidebar from '../components/Sidebar'
 import { authDataContext } from '../Context/AuthContext'
 import axios from 'axios'
-import { FiUser, FiMail, FiCalendar } from 'react-icons/fi'
+import { FiUser, FiMail, FiCalendar, FiEdit2, FiTrash2 } from 'react-icons/fi'
 
 function Users() {
   const { serverUrl } = useContext(authDataContext)
@@ -14,29 +14,80 @@ function Users() {
   const [total, setTotal] = useState(0)
   const observerTarget = useRef(null)
 
+  // Edit/Delete State
+  const [selectedUser, setSelectedUser] = useState(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editFormData, setEditFormData] = useState({ name: '', role: '', phone: '' })
+  const [actionLoading, setActionLoading] = useState(false)
+
+  const openEditModal = (user) => {
+    setSelectedUser(user)
+    setEditFormData({
+      name: user.name || '',
+      role: user.role || 'USER',
+      phone: user.phone || ''
+    })
+    setIsEditModalOpen(true)
+  }
+
+  const handleDelete = async (userId) => {
+    if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) return
+
+    try {
+      setActionLoading(true)
+      const res = await axios.delete(`${serverUrl}/api/user/delete/${userId}`, { withCredentials: true })
+      if (res.status === 200) {
+        setUsers(prev => prev.filter(u => u._id !== userId))
+        setTotal(prev => prev - 1)
+        alert("User deleted successfully")
+      }
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to delete user")
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  const handleUpdate = async (e) => {
+    e.preventDefault()
+    try {
+      setActionLoading(true)
+      const res = await axios.put(`${serverUrl}/api/user/update/${selectedUser._id}`, editFormData, { withCredentials: true })
+      if (res.status === 200) {
+        setUsers(prev => prev.map(u => u._id === selectedUser._id ? { ...u, ...editFormData } : u))
+        setIsEditModalOpen(false)
+        alert("User updated successfully")
+      }
+    } catch (error) {
+      alert(error.response?.data?.message || "Failed to update user")
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
   const fetchUsers = useCallback(async (pageNum = 1, append = false) => {
     try {
       setLoading(true)
-      const result = await axios.get(serverUrl + "/api/user/list", { 
+      const result = await axios.get(serverUrl + "/api/user/list", {
         params: { page: pageNum, limit: 20 },
-        withCredentials: true 
+        withCredentials: true
       })
-      
+
       const data = result.data?.data || []
       const totalCount = result.data?.total || 0
-      
+
       setTotal(totalCount)
       setHasMore(data.length === 20 && (append ? users.length + data.length : data.length) < totalCount)
-      
+
       if (append) {
         setUsers(prev => [...prev, ...data])
       } else {
         setUsers(data)
       }
-      
-     
+
+
     } catch (error) {
-      
+
     } finally {
       setLoading(false)
     }
@@ -83,8 +134,8 @@ function Users() {
 
   return (
     <div className='min-h-screen bg-gray-50 dark:bg-gray-900 pt-[70px] pb-[50px]'>
-      <Nav/>
-      <Sidebar/>
+      <Nav />
+      <Sidebar />
       <div className='md:ml-[260px] ml-[64px] p-6 md:p-10'>
         <div className='animate-fade-in'>
           <div className='flex items-center justify-between mb-2'>
@@ -97,13 +148,13 @@ function Users() {
           </div>
           <p className='text-gray-600 dark:text-gray-400 mb-8'>View and manage all registered users</p>
         </div>
-        
+
         {users && users.length > 0 ? (
           <>
             <div className='grid grid-cols-1 gap-6 animate-fade-in-up'>
               {users.map((user, index) => (
-                <div 
-                  key={user._id} 
+                <div
+                  key={user._id}
                   className='bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 card-shadow-hover transition-all duration-300 hover:scale-[1.01]'
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
@@ -143,29 +194,111 @@ function Users() {
 
                         {/* Role Badge */}
                         <div className='flex flex-col items-end gap-2'>
-                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            user.role === 'ADMIN'
-                              ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
-                              : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                          }`}>
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${user.role === 'ADMIN'
+                            ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
+                            : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                            }`}>
                             {user.role || 'USER'}
                           </span>
                           {user.emailVerified !== undefined && (
-                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                              user.emailVerified
-                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                                : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300'
-                            }`}>
+                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${user.emailVerified
+                              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                              : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300'
+                              }`}>
                               {user.emailVerified ? '✓ Verified' : '⚠ Unverified'}
                             </span>
                           )}
                         </div>
+
+                        {/* User Actions */}
+                        <div className='flex gap-2 mt-2'>
+                          <button
+                            onClick={() => openEditModal(user)}
+                            className='p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors border border-blue-200 dark:border-blue-800'
+                            title='Edit User'
+                          >
+                            <FiEdit2 className='w-4 h-4' />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(user._id)}
+                            disabled={actionLoading}
+                            className='p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors border border-red-200 dark:border-red-800'
+                            title='Delete User'
+                          >
+                            <FiTrash2 className='w-4 h-4' />
+                          </button>
+                        </div>
+
                       </div>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
+
+            {/* Edit Modal */}
+            {isEditModalOpen && (
+              <div className='fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in'>
+                <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-md overflow-hidden animate-zoom-in'>
+                  <div className='gradient-primary p-6 text-white'>
+                    <h2 className='text-2xl font-bold'>Update User</h2>
+                    <p className='text-purple-100 text-sm'>Editing: {selectedUser?.email}</p>
+                  </div>
+
+                  <form onSubmit={handleUpdate} className='p-6 space-y-4'>
+                    <div>
+                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Full Name</label>
+                      <input
+                        type='text'
+                        value={editFormData.name}
+                        onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                        className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Phone</label>
+                      <input
+                        type='text'
+                        value={editFormData.phone}
+                        onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                        className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
+                      />
+                    </div>
+
+                    <div>
+                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Role</label>
+                      <select
+                        value={editFormData.role}
+                        onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value })}
+                        className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
+                      >
+                        <option value="USER">User (Customer)</option>
+                        <option value="ADMIN">Admin (Employee)</option>
+                      </select>
+                    </div>
+
+                    <div className='flex gap-3 mt-6'>
+                      <button
+                        type='button'
+                        onClick={() => setIsEditModalOpen(false)}
+                        className='flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type='submit'
+                        disabled={actionLoading}
+                        className='flex-1 px-4 py-2 rounded-lg gradient-primary text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50'
+                      >
+                        {actionLoading ? 'Saving...' : 'Save Changes'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
 
             {/* Infinite Scroll Trigger */}
             <div ref={observerTarget} className='h-10 flex items-center justify-center mt-6'>
