@@ -289,158 +289,7 @@ function Users() {
 
 
 
-            {/* Create Modal */}
-            {isCreateModalOpen && (
-              <div className='fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in'>
-                <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-md overflow-hidden animate-zoom-in'>
-                  <div className='gradient-primary p-6 text-white'>
-                    <h2 className='text-2xl font-bold'>Add New User</h2>
-                    <p className='text-purple-100 text-sm'>Enter user details below</p>
-                  </div>
 
-                  <form onSubmit={handleCreate} className='p-6 space-y-4'>
-                    <div>
-                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Full Name</label>
-                      <input
-                        type='text'
-                        value={createFormData.name}
-                        onChange={(e) => setCreateFormData({ ...createFormData, name: e.target.value })}
-                        className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
-                        required
-                        placeholder='John Doe'
-                      />
-                    </div>
-
-                    <div>
-                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Username</label>
-                      <input
-                        type='text'
-                        value={createFormData.username}
-                        onChange={(e) => setCreateFormData({ ...createFormData, username: e.target.value })}
-                        className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
-                        required
-                        placeholder='johndoe123'
-                      />
-                    </div>
-
-                    <div>
-                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Email</label>
-                      <input
-                        type='email'
-                        value={createFormData.email}
-                        onChange={(e) => setCreateFormData({ ...createFormData, email: e.target.value })}
-                        className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
-                        required
-                        placeholder='john@example.com'
-                      />
-                    </div>
-
-                    <div>
-                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Password</label>
-                      <input
-                        type='password'
-                        value={createFormData.password}
-                        onChange={(e) => setCreateFormData({ ...createFormData, password: e.target.value })}
-                        className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
-                        required
-                        minLength={8}
-                        placeholder='********'
-                      />
-                    </div>
-
-                    <div>
-                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Phone</label>
-                      <input
-                        type='text'
-                        value={createFormData.phone}
-                        onChange={(e) => setCreateFormData({ ...createFormData, phone: e.target.value })}
-                        className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
-                        placeholder='+44 123 456 7890'
-                      />
-                    </div>
-
-                    <div className='flex gap-3 mt-6'>
-                      <button
-                        type='button'
-                        onClick={() => setIsCreateModalOpen(false)}
-                        className='flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type='submit'
-                        className='flex-1 px-4 py-2 rounded-lg gradient-primary text-white font-semibold hover:opacity-90 transition-opacity'
-                      >
-                        {actionLoading ? 'Creating...' : 'Create User'}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
-
-            {/* Edit Modal */}
-            {isEditModalOpen && (
-              <div className='fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in'>
-                <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-md overflow-hidden animate-zoom-in'>
-                  <div className='gradient-primary p-6 text-white'>
-                    <h2 className='text-2xl font-bold'>Update User</h2>
-                    <p className='text-purple-100 text-sm'>Editing: {selectedUser?.email}</p>
-                  </div>
-
-                  <form onSubmit={handleUpdate} className='p-6 space-y-4'>
-                    <div>
-                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Full Name</label>
-                      <input
-                        type='text'
-                        value={editFormData.name}
-                        onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
-                        className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Phone</label>
-                      <input
-                        type='text'
-                        value={editFormData.phone}
-                        onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
-                        className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
-                      />
-                    </div>
-
-                    <div>
-                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Role</label>
-                      <select
-                        value={editFormData.role}
-                        onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value })}
-                        className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
-                      >
-                        <option value="USER">User (Customer)</option>
-                        <option value="ADMIN">Admin (Employee)</option>
-                      </select>
-                    </div>
-
-                    <div className='flex gap-3 mt-6'>
-                      <button
-                        type='button'
-                        onClick={() => setIsEditModalOpen(false)}
-                        className='flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type='submit'
-                        className='flex-1 px-4 py-2 rounded-lg gradient-primary text-white font-semibold hover:opacity-90 transition-opacity'
-                      >
-                        {actionLoading ? 'Saving...' : 'Save Changes'}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            )}
 
             {/* Infinite Scroll Trigger */}
             <div ref={observerTarget} className='h-10 flex items-center justify-center mt-6'>
@@ -465,6 +314,160 @@ function Users() {
             <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600'></div>
           </div>
         )}
+
+        {/* Create Modal */}
+        {isCreateModalOpen && (
+          <div className='fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in'>
+            <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-md overflow-hidden animate-zoom-in'>
+              <div className='gradient-primary p-6 text-white'>
+                <h2 className='text-2xl font-bold'>Add New User</h2>
+                <p className='text-purple-100 text-sm'>Enter user details below</p>
+              </div>
+
+              <form onSubmit={handleCreate} className='p-6 space-y-4'>
+                <div>
+                  <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Full Name</label>
+                  <input
+                    type='text'
+                    value={createFormData.name}
+                    onChange={(e) => setCreateFormData({ ...createFormData, name: e.target.value })}
+                    className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
+                    required
+                    placeholder='John Doe'
+                  />
+                </div>
+
+                <div>
+                  <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Username</label>
+                  <input
+                    type='text'
+                    value={createFormData.username}
+                    onChange={(e) => setCreateFormData({ ...createFormData, username: e.target.value })}
+                    className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
+                    required
+                    placeholder='johndoe123'
+                  />
+                </div>
+
+                <div>
+                  <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Email</label>
+                  <input
+                    type='email'
+                    value={createFormData.email}
+                    onChange={(e) => setCreateFormData({ ...createFormData, email: e.target.value })}
+                    className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
+                    required
+                    placeholder='john@example.com'
+                  />
+                </div>
+
+                <div>
+                  <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Password</label>
+                  <input
+                    type='password'
+                    value={createFormData.password}
+                    onChange={(e) => setCreateFormData({ ...createFormData, password: e.target.value })}
+                    className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
+                    required
+                    minLength={8}
+                    placeholder='********'
+                  />
+                </div>
+
+                <div>
+                  <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Phone</label>
+                  <input
+                    type='text'
+                    value={createFormData.phone}
+                    onChange={(e) => setCreateFormData({ ...createFormData, phone: e.target.value })}
+                    className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
+                    placeholder='+44 123 456 7890'
+                  />
+                </div>
+
+                <div className='flex gap-3 mt-6'>
+                  <button
+                    type='button'
+                    onClick={() => setIsCreateModalOpen(false)}
+                    className='flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type='submit'
+                    className='flex-1 px-4 py-2 rounded-lg gradient-primary text-white font-semibold hover:opacity-90 transition-opacity'
+                  >
+                    {actionLoading ? 'Creating...' : 'Create User'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Modal */}
+        {isEditModalOpen && (
+          <div className='fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in'>
+            <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-md overflow-hidden animate-zoom-in'>
+              <div className='gradient-primary p-6 text-white'>
+                <h2 className='text-2xl font-bold'>Update User</h2>
+                <p className='text-purple-100 text-sm'>Editing: {selectedUser?.email}</p>
+              </div>
+
+              <form onSubmit={handleUpdate} className='p-6 space-y-4'>
+                <div>
+                  <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Full Name</label>
+                  <input
+                    type='text'
+                    value={editFormData.name}
+                    onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                    className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Phone</label>
+                  <input
+                    type='text'
+                    value={editFormData.phone}
+                    onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                    className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
+                  />
+                </div>
+
+                <div>
+                  <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Role</label>
+                  <select
+                    value={editFormData.role}
+                    onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value })}
+                    className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
+                  >
+                    <option value="USER">User (Customer)</option>
+                    <option value="ADMIN">Admin (Employee)</option>
+                  </select>
+                </div>
+
+                <div className='flex gap-3 mt-6'>
+                  <button
+                    type='button'
+                    onClick={() => setIsEditModalOpen(false)}
+                    className='flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type='submit'
+                    className='flex-1 px-4 py-2 rounded-lg gradient-primary text-white font-semibold hover:opacity-90 transition-opacity'
+                  >
+                    {actionLoading ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
       </div>
     </div >
   )
