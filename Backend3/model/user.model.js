@@ -6,6 +6,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    username: {
+      type: String,
+      unique: true,
+      sparse: true // Allow null/undefined for existing users or if not provided
+    },
 
     email: {
       type: String,
@@ -24,6 +29,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    phone: {
+      type: String,
+      default: null,
+    },
 
     cartData: {
       type: Object,
@@ -32,13 +41,15 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["USER", "ADMIN"], 
-      default: "USER",        
+      enum: ["USER", "ADMIN"],
+      default: "USER",
     },
-    stripeCustomerId :{
+    stripeCustomerId: {
       type: String,
-      default:null
-    }
+      default: null
+    },
+    resetPasswordToken: String,
+    resetPasswordExpire: Date
   },
   { timestamps: true, minimize: false }
 );

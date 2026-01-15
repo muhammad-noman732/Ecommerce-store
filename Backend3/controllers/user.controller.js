@@ -1,5 +1,7 @@
 import { User } from "../model/user.model.js"
 import { sanitizeUser } from "../utils/userUtils.js"
+import bcrypt from "bcryptjs"
+import validator from "validator"
 
 
 export const getCurrentUser = async (req, res) => {
@@ -125,5 +127,47 @@ export const deleteUser = async (req, res) => {
 
   } catch (error) {
     return res.status(500).json({ message: `Delete User error: ${error.message}` })
+  }
+}
+
+export const createUser = async (req, res) => {
+  try {
+    const { name, username, email, password, phone } = req.body
+
+    if (!name || !username || !email || !password) {
+      return res.status(400).json({ message: "Please fill all required fields." })
+    }
+
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ message: "Enter a valid Email." })
+    }
+
+    const existUser = await User.findOne({ $or: [{ email }, { username }] })
+    if (existUser) {
+      return res.status(400).json({ message: "User with this email or username already exists." })
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ message: "Password must contain at least 8 characters." })
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    const newUser = await User.create({
+      name,
+      username,
+      email,
+      password: hashedPassword,
+      phone: phone || null,
+      role: "USER" // Admins create regular users by default, can be changed later if needed
+    })
+
+    return res.status(201).json({
+      message: "User created successfully",
+      user: sanitizeUser(newUser)
+    })
+
+  } catch (error) {
+    return res.status(500).json({ message: `Create User error: ${error.message}` })
   }
 }

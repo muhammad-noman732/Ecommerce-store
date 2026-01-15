@@ -20,6 +20,8 @@ import NotFound from './pages/NotFound'
 import AI from './Components/AI'
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
 
@@ -50,6 +52,8 @@ function App() {
         (<Navigate  to={location.state?.from || "/" } />) 
         :(<Login/>)}/>    */}
         <Route path='/login' element={<Login />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/reset-password/:resetToken' element={<ResetPassword />} />
 
         {/* Guarded:
      <Route path='/' element={userData ? <Home/> : <Navigate  to='/login' state={{from:location.pathname}}/>} />    */}

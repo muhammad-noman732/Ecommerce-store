@@ -3,7 +3,8 @@ import Nav from '../components/Nav'
 import Sidebar from '../components/Sidebar'
 import { authDataContext } from '../Context/AuthContext'
 import axios from 'axios'
-import { FiUser, FiMail, FiCalendar, FiEdit2, FiTrash2 } from 'react-icons/fi'
+import { FiUser, FiMail, FiCalendar, FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi'
+import { toast } from 'react-toastify'
 
 function Users() {
   const { serverUrl } = useContext(authDataContext)
@@ -14,11 +15,21 @@ function Users() {
   const [total, setTotal] = useState(0)
   const observerTarget = useRef(null)
 
-  // Edit/Delete State
+
   const [selectedUser, setSelectedUser] = useState(null)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [editFormData, setEditFormData] = useState({ name: '', role: '', phone: '' })
   const [actionLoading, setActionLoading] = useState(false)
+
+  // Create User State
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [createFormData, setCreateFormData] = useState({
+    name: '',
+    username: '',
+    email: '',
+    password: '',
+    phone: '+44'
+  })
 
   const openEditModal = (user) => {
     setSelectedUser(user)
@@ -39,10 +50,35 @@ function Users() {
       if (res.status === 200) {
         setUsers(prev => prev.filter(u => u._id !== userId))
         setTotal(prev => prev - 1)
-        alert("User deleted successfully")
+        toast.success("User deleted successfully")
       }
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to delete user")
+      toast.error(error.response?.data?.message || "Failed to delete user")
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  const handleCreate = async (e) => {
+    e.preventDefault()
+    try {
+      setActionLoading(true)
+      const res = await axios.post(`${serverUrl}/api/user/create`, createFormData, { withCredentials: true })
+      if (res.status === 201) {
+        setUsers(prev => [res.data.user, ...prev])
+        setTotal(prev => prev + 1)
+        setIsCreateModalOpen(false)
+        setCreateFormData({
+          name: '',
+          username: '',
+          email: '',
+          password: '',
+          phone: '+44'
+        })
+        toast.success("User created successfully")
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to create user")
     } finally {
       setActionLoading(false)
     }
@@ -56,10 +92,10 @@ function Users() {
       if (res.status === 200) {
         setUsers(prev => prev.map(u => u._id === selectedUser._id ? { ...u, ...editFormData } : u))
         setIsEditModalOpen(false)
-        alert("User updated successfully")
+        toast.success("User updated successfully")
       }
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to update user")
+      toast.error(error.response?.data?.message || "Failed to update user")
     } finally {
       setActionLoading(false)
     }
@@ -93,7 +129,7 @@ function Users() {
     }
   }, [serverUrl, users.length])
 
-  // Infinite scroll observer
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => {
@@ -117,7 +153,7 @@ function Users() {
     }
   }, [hasMore, loading, page, fetchUsers])
 
-  // Initial load
+
   useEffect(() => {
     fetchUsers(1, false)
   }, [])
@@ -138,13 +174,22 @@ function Users() {
       <Sidebar />
       <div className='md:ml-[260px] ml-[64px] p-6 md:p-10'>
         <div className='animate-fade-in'>
-          <div className='flex items-center justify-between mb-2'>
-            <h1 className='text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100'>All Users</h1>
-            {total > 0 && (
-              <span className='text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-lg'>
-                Total: {total} users
-              </span>
-            )}
+          <div className='flex items-center justify-between mb-8'>
+            <div className='flex items-center gap-4'>
+              <h1 className='text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100'>All Users</h1>
+              {total > 0 && (
+                <span className='text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-lg'>
+                  Total: {total} users
+                </span>
+              )}
+            </div>
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className='flex items-center gap-2 px-6 py-3 rounded-xl gradient-primary text-white font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all'
+            >
+              <FiPlus className='w-5 h-5' />
+              Add User
+            </button>
           </div>
           <p className='text-gray-600 dark:text-gray-400 mb-8'>View and manage all registered users</p>
         </div>
@@ -178,6 +223,12 @@ function Users() {
                               <FiMail className='w-4 h-4' />
                               <span className='text-sm'>{user.email}</span>
                             </div>
+                            {user.username && (
+                              <div className='flex items-center gap-2 text-gray-600 dark:text-gray-400'>
+                                <FiUser className='w-4 h-4' />
+                                <span className='text-sm font-mono'>@{user.username}</span>
+                              </div>
+                            )}
                             {user.phone && (
                               <div className='flex items-center gap-2 text-gray-600 dark:text-gray-400'>
                                 <span className='text-sm'>📞 {user.phone}</span>
@@ -235,6 +286,99 @@ function Users() {
                 </div>
               ))}
             </div>
+
+
+
+            {/* Create Modal */}
+            {isCreateModalOpen && (
+              <div className='fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in'>
+                <div className='bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-md overflow-hidden animate-zoom-in'>
+                  <div className='gradient-primary p-6 text-white'>
+                    <h2 className='text-2xl font-bold'>Add New User</h2>
+                    <p className='text-purple-100 text-sm'>Enter user details below</p>
+                  </div>
+
+                  <form onSubmit={handleCreate} className='p-6 space-y-4'>
+                    <div>
+                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Full Name</label>
+                      <input
+                        type='text'
+                        value={createFormData.name}
+                        onChange={(e) => setCreateFormData({ ...createFormData, name: e.target.value })}
+                        className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
+                        required
+                        placeholder='John Doe'
+                      />
+                    </div>
+
+                    <div>
+                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Username</label>
+                      <input
+                        type='text'
+                        value={createFormData.username}
+                        onChange={(e) => setCreateFormData({ ...createFormData, username: e.target.value })}
+                        className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
+                        required
+                        placeholder='johndoe123'
+                      />
+                    </div>
+
+                    <div>
+                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Email</label>
+                      <input
+                        type='email'
+                        value={createFormData.email}
+                        onChange={(e) => setCreateFormData({ ...createFormData, email: e.target.value })}
+                        className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
+                        required
+                        placeholder='john@example.com'
+                      />
+                    </div>
+
+                    <div>
+                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Password</label>
+                      <input
+                        type='password'
+                        value={createFormData.password}
+                        onChange={(e) => setCreateFormData({ ...createFormData, password: e.target.value })}
+                        className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
+                        required
+                        minLength={8}
+                        placeholder='********'
+                      />
+                    </div>
+
+                    <div>
+                      <label className='block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1'>Phone</label>
+                      <input
+                        type='text'
+                        value={createFormData.phone}
+                        onChange={(e) => setCreateFormData({ ...createFormData, phone: e.target.value })}
+                        className='w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 outline-none'
+                        placeholder='+44 123 456 7890'
+                      />
+                    </div>
+
+                    <div className='flex gap-3 mt-6'>
+                      <button
+                        type='button'
+                        onClick={() => setIsCreateModalOpen(false)}
+                        className='flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type='submit'
+                        disabled={actionLoading}
+                        className='flex-1 px-4 py-2 rounded-lg gradient-primary text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50'
+                      >
+                        {actionLoading ? 'Creating...' : 'Create User'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
 
             {/* Edit Modal */}
             {isEditModalOpen && (
@@ -324,7 +468,7 @@ function Users() {
           </div>
         )}
       </div>
-    </div>
+    </div >
   )
 }
 

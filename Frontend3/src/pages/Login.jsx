@@ -103,6 +103,15 @@ function Login() {
                 <span className='block mt-2 text-sm text-red-400'>{errors.password.message}</span>
               )}
             </div>
+            <div className='flex justify-end'>
+              <button
+                type='button'
+                onClick={() => navigate("/forgot-password")}
+                className='text-sm text-red-400 hover:text-red-300 transition-colors'
+              >
+                Forgot Password?
+              </button>
+            </div>
 
             {/* Root error */}
             {errors.root && (

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { BsEye } from "react-icons/bs";
 import { TbEyeClosed } from "react-icons/tb";
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -38,7 +39,7 @@ function Login() {
     } catch (error) {
       setAdminData(null)
       const apiMessage = error.response?.data?.message || 'Admin login failed'
-      setError('root', { type: 'manual', message: apiMessage })
+      toast.error(apiMessage)
     }
   }
 
@@ -92,11 +93,17 @@ function Login() {
               )}
             </div>
 
-            {errors.root && (
-              <div className='bg-red-500/10 border border-red-500/50 rounded-lg p-3 text-sm text-red-400'>
-                {errors.root.message}
-              </div>
-            )}
+            <div className='flex justify-end'>
+              <button
+                type='button'
+                onClick={() => navigate("/forgot-password")}
+                className='text-sm text-purple-400 hover:text-purple-300 transition-colors'
+              >
+                Forgot Password?
+              </button>
+            </div>
+
+            {/* Removed inline root error, using toast */}
 
             <button
               type='submit'
