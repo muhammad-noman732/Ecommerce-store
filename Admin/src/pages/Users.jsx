@@ -123,7 +123,7 @@ function Users() {
 
 
     } catch (error) {
-
+      toast.error(error.response?.data?.message || "Failed to fetch users")
     } finally {
       setLoading(false)
     }
@@ -369,8 +369,7 @@ function Users() {
                       </button>
                       <button
                         type='submit'
-                        disabled={actionLoading}
-                        className='flex-1 px-4 py-2 rounded-lg gradient-primary text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50'
+                        className='flex-1 px-4 py-2 rounded-lg gradient-primary text-white font-semibold hover:opacity-90 transition-opacity'
                       >
                         {actionLoading ? 'Creating...' : 'Create User'}
                       </button>
@@ -433,8 +432,7 @@ function Users() {
                       </button>
                       <button
                         type='submit'
-                        disabled={actionLoading}
-                        className='flex-1 px-4 py-2 rounded-lg gradient-primary text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50'
+                        className='flex-1 px-4 py-2 rounded-lg gradient-primary text-white font-semibold hover:opacity-90 transition-opacity'
                       >
                         {actionLoading ? 'Saving...' : 'Save Changes'}
                       </button>

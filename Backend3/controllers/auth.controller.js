@@ -171,9 +171,9 @@ export const forgotPassword = async (req, res) => {
         // Let's assume we redirect to the main frontend for now, or allow the client to send the base URL.
         // Or better, we can check a header or query param if it's admin.
 
-        let frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        let frontendUrl = process.env.FRONTEND_URL || 'https://imkautos.co.uk';
         if (req.body.isAdmin) {
-            frontendUrl = process.env.ADMIN_URL || 'http://localhost:5174';
+            frontendUrl = process.env.ADMIN_URL || 'https://admin.imkautos.co.uk';
         }
 
         const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
